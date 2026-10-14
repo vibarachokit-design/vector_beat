@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vector Beat · Islas del ritmo</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f9ede6;color:#54394e;font-family:ui-rounded,'Trebuchet MS',sans-serif}
+button{font:inherit;cursor:pointer;border:0;border-radius:30px;padding:13px 24px;background:#80cbbb;color:#213f39;font-weight:bold;box-shadow:0 5px 0 #589c91}
+button:active{transform:translateY(3px);box-shadow:0 2px 0 #589c91}
+button:focus-visible{outline:3px solid #754e95;outline-offset:4px}
+button.ghost{background:#fff4e9;color:#54394e;box-shadow:0 5px 0 #d9c3b6}
+header{display:flex;align-items:center;justify-content:space-between;padding:18px 5%;gap:12px}
+header b{letter-spacing:2px}
+header span{font-size:12px}
+header .actions{display:flex;gap:10px}
+main{max-width:1200px;margin:auto;padding:0 22px 25px}
+.stage{position:relative;overflow:hidden;border-radius:28px;box-shadow:0 20px 60px #94688430;background:#e9cef0;aspect-ratio:16/9}
+canvas{width:100%;height:100%;display:block;touch-action:none}
+.menu{position:absolute;inset:0;background:url(cover.png) center/cover}
+.start{position:absolute;bottom:10%;left:33%;width:34%;height:15%;padding:0;display:flex;align-items:center;justify-content:center;background:#fff0e1;color:#54394e;border:3px solid #83cdbd;box-shadow:0 5px 0 #569a8d;font-size:clamp(14px,3vw,32px)}
+.start:disabled{opacity:.8;cursor:wait}
+.intro{background:#fff8;backdrop-filter:blur(10px);position:absolute;top:15px;left:15px;border-radius:20px;padding:10px 15px;font-size:12px}
+.best{margin-top:4px;font-weight:bold;color:#754e95}
+.hud{position:absolute;top:18px;left:20px;right:20px;display:none;align-items:center;gap:12px;pointer-events:none}
+.pill{background:#fff9;border:1px solid #fff;border-radius:22px;padding:10px 16px;backdrop-filter:blur(10px);font-weight:bold;white-space:nowrap}
+.progress{flex:1;height:9px;background:#fff8;border-radius:10px;overflow:hidden;min-width:20px}
+.progress div{height:100%;background:#71baa9}
+.hud button{pointer-events:auto;padding:9px 14px;font-size:12px;white-space:nowrap}
+.pulse{min-width:42px;text-align:center;will-change:transform;background:#d9f3e8}
+.combo{min-width:84px;text-align:center}
+.overlay{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:#60406833;backdrop-filter:blur(6px)}
+.card{text-align:center;background:#fff4e9;padding:28px 32px;border-radius:28px;max-width:92%;max-height:94%;overflow:auto;box-shadow:0 12px 50px #53324830}
+.card h2{margin:0 0 10px;font-size:30px}
+.card p{line-height:1.6;margin:0 0 14px}
+.card .buttons{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.victory-mascot{display:none;width:96px;height:96px;margin:0 auto 10px;background:url(expressions.png) right center/300% 100%;animation:cheer .65s ease-in-out infinite alternate}
+@keyframes cheer{to{transform:translateY(-12px) rotate(8deg)}}
+.results{display:none;align-items:center;gap:22px;justify-content:center;margin:0 0 16px}
+.grade{font-size:64px;font-weight:900;line-height:1;width:92px;height:92px;border-radius:24px;display:flex;align-items:center;justify-content:center;background:#fff;box-shadow:inset 0 0 0 4px #83cdbd;color:#54394e}
+.stats{display:grid;grid-template-columns:auto auto;gap:3px 16px;text-align:left;font-size:14px}
+.stats b{text-align:right}
+.record{display:none;color:#b0548a;font-weight:bold;margin:-6px 0 12px}
+.stars{display:none;color:#be944e;font-size:43px;letter-spacing:7px;margin-bottom:6px}
+.best-pill{position:absolute;right:14px;top:15px;background:#fff9;border-radius:18px;padding:10px 14px;font-size:11px;letter-spacing:1px;font-weight:bold}
+.calib-dots{display:flex;gap:8px;justify-content:center;margin:6px 0 14px}
+.calib-dots i{width:16px;height:16px;border-radius:50%;background:#e8d6cc;transition:transform .08s}
+.calib-dots i.on{background:#80cbbb;transform:scale(1.35)}
+.calib-dots i.tap{box-shadow:0 0 0 3px #b08ac6}
+.calib-pad{display:block;width:100%;padding:22px;margin:0 0 14px;font-size:18px}
+.controls{display:flex;justify-content:space-between;gap:20px;align-items:center;margin-top:22px}
+.controls p{font-size:14px;line-height:1.7;margin:0}
+.eyebrow{font-size:11px;letter-spacing:2px;color:#987488}
+.controls strong{font-size:18px}
+footer{display:flex;gap:22px;font-size:12px;color:#886e81;margin-top:25px}
+.jump{display:none}
+.practice-btn{position:absolute;bottom:10%;left:69%;width:16%;height:15%;padding:0;font-size:clamp(12px,2vw,22px);border:3px solid #c9a6dd;box-shadow:0 5px 0 #a985c0}
+.checkpoint{display:none}
+.hud.practice .checkpoint{display:block;background:#d9f3e8}
+.attempt{font-size:12px}
+.wardrobe{display:flex;justify-content:space-between;align-items:end;gap:16px;margin-top:20px;flex-wrap:wrap}
+.skins{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.skin{display:flex;align-items:center;gap:6px;padding:7px 12px;font-size:12px;background:#fff4e9;color:#54394e;box-shadow:0 3px 0 #e2cfc3}
+.skin i{width:14px;height:14px;border-radius:4px;transform:rotate(45deg);display:inline-block}
+.skin.on{outline:3px solid #80cbbb}
+.skin:disabled{opacity:.55;cursor:not-allowed}
+.found{font-size:13px;color:#754e95;font-weight:bold}
+.beat-hint{position:absolute;top:78px;left:50%;transform:translateX(-50%);background:#fff9;border:1px solid #fff;border-radius:18px;padding:8px 18px;text-align:center;font-size:13px;pointer-events:none;display:none;white-space:nowrap}
+.stage:has(.menu[style*="none"]) canvas{cursor:pointer}
+@media(max-width:650px){
+  main{padding:0 10px}
+  header{padding:12px 10px}
+  header span{display:none}
+  header .actions button{padding:9px 12px;font-size:12px}
+  .controls{align-items:start}
+  .jump{display:block}
+  .hud{gap:5px;left:8px;right:8px;top:8px}
+  .pill{font-size:11px;padding:6px 8px}
+  .pill.notes{display:none}
+  .combo{min-width:0}
+  .pulse{min-width:26px;padding:6px}
+  .hud button{padding:6px 8px;font-size:11px}
+  .intro{font-size:10px;top:8px;left:8px;padding:6px 10px}
+  .controls p{font-size:12px}
+  footer{gap:12px}
+  .start{left:8%;width:50%;bottom:8%}
+  .practice-btn{left:62%;width:30%;bottom:8%;font-size:13px}
+  .attempt{display:none}
+  .hud.practice .pulse,.hud.practice .combo{display:none}
+  .skin{padding:6px 9px;font-size:11px}
+  .beat-hint{top:44px;font-size:11px;padding:4px 10px}
+  .overlay{position:fixed;z-index:20}
+  .card{padding:16px 18px}
+  .card h2{font-size:20px}
+  .card p{font-size:13px;margin-bottom:8px}
+  .grade{font-size:40px;width:60px;height:60px}
+  .stats{font-size:12px}
+  .victory-mascot{width:56px;height:56px}
+  .stars{font-size:30px}
+  .best-pill{top:52px;left:8px;right:auto;font-size:9px;padding:5px 8px}
+}
+</style>
+</head>
+<body>
+<header>
+  <b>◇ VECTOR BEAT</b><span>Una pequeña aventura entre nubes</span>
+  <div class="actions">
+    <button id="calibrate" class="ghost" aria-label="Calibrar el ritmo">Calibrar</button>
+    <button id="sound" aria-label="Activar o desactivar sonido">Sonido: sí</button>
+  </div>
+</header>
+<main>
+  <div class="stage">
+    <canvas id="game" width="1280" height="720" aria-label="Juego de saltos entre islas flotantes"></canvas>
+    <div class="menu" id="menu">
+      <div class="best-pill" id="best"></div>
+      <div class="intro">DEMO MUSICAL · ISLAS DEL RITMO<br>Salta al pulso · Doble salto · Trampolines y ruta alta.</div>
+      <button class="start" id="start" aria-label="Jugar Vector Beat">Jugar</button>
+      <button class="practice-btn ghost" id="practiceBtn" aria-label="Modo práctica">Práctica</button>
+    </div>
+    <div class="hud" id="hud">
+      <div class="pill" id="hearts"></div>
+      <div class="pill notes" id="notes"></div>
+      <div class="pill" id="score"></div>
+      <div class="pill combo" id="combo"></div>
+      <div class="pill attempt" id="attempt"></div>
+      <div class="progress"><div id="bar"></div></div>
+      <div class="pill pulse" id="pulse">♪</div>
+      <button id="checkpoint" class="checkpoint" title="Guardar posición (C)">◆ Punto</button>
+      <button id="pause">Pausa</button>
+      <button id="home">Inicio</button>
+    </div>
+    <div id="beatHint" class="beat-hint"></div>
+    <div class="overlay" id="overlay">
+      <div class="card" id="card">
+        <div class="eyebrow">VECTOR BEAT</div>
+        <div class="stars" id="stars" aria-label="Estrellas del nivel"></div>
+        <div class="victory-mascot" id="mascot"></div>
+        <h2 id="message"></h2>
+        <div class="results" id="results">
+          <div class="stats" id="stats"></div>
+        </div>
+        <div class="record" id="record">¡Nuevo récord!</div>
+        <p id="detail"></p>
+        <div class="buttons"><button id="again">Volver a jugar</button></div>
+      </div>
+      <div class="card" id="calibCard" style="display:none">
+        <div class="eyebrow">CALIBRAR RITMO</div>
+        <h2>Toca al ritmo de los clics</h2>
+        <p id="calibText">Pulsa Espacio o el botón grande en cada clic. Así el juego compensa el retraso de tu pantalla, parlantes o audífonos.</p>
+        <div class="calib-dots" id="calibDots"></div>
+        <button class="calib-pad" id="calibPad">Tocar aquí</button>
+        <div class="buttons"><button id="calibStart">Empezar</button><button id="calibReset" class="ghost">Restablecer</button><button id="calibClose" class="ghost">Cerrar</button></div>
+      </div>
+    </div>
+  </div>
+  <div class="controls">
+    <div>
+      <div class="eyebrow">MUNDO 01 · JARDINES DEL CIELO</div>
+      <strong>Aprende el ritmo. Encuentra tu camino al portal.</strong>
+      <p>Espacio, clic o toque para saltar · Mantén para subir más · Pulsa otra vez en el aire para el doble salto<br>↑ Salto · ↑↑ Doble salto · ◎ Anillo: toca al pasar · ↟ Trampolín · Portales » velocidad, ⇅ gravedad, ≋ vuelo (mantén para subir)<br>P pausa · R reinicia · En práctica: C guarda tu posición, X la quita · ◆ Tres cristales secretos desbloquean colores.</p>
+    </div>
+    <button class="jump" id="jump">Saltar ↑</button>
+  </div>
+  <div class="wardrobe">
+    <div><div class="eyebrow">COLOR DEL CUBO</div><div class="skins" id="skins"></div></div>
+    <div class="found" id="crystalsFound"></div>
+  </div>
+  <footer><span>↟ Trampolines y rutas altas</span><span>♫ Tu pista · Nivel 13</span><span>★ Tres estrellas por conquistar</span></footer>
+</main>
+<script src="level.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

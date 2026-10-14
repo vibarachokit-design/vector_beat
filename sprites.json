@@ -1,0 +1,134 @@
+{
+  "cone-sprites": {
+    "file": "cone-sprites.png",
+    "frameCount": 4,
+    "frames": [
+      [
+        84,
+        167,
+        377,
+        417
+      ],
+      [
+        627,
+        167,
+        377,
+        417
+      ],
+      [
+        1170,
+        167,
+        377,
+        417
+      ],
+      [
+        1713,
+        167,
+        377,
+        417
+      ]
+    ],
+    "anchor": "bottom-center",
+    "framesPerBeat": 4,
+    "triggered": false
+  },
+  "trampoline-sprites": {
+    "file": "trampoline-sprites.png",
+    "frameCount": 4,
+    "frames": [
+      [
+        26,
+        232,
+        499,
+        296
+      ],
+      [
+        569,
+        232,
+        499,
+        296
+      ],
+      [
+        1112,
+        232,
+        499,
+        296
+      ],
+      [
+        1655,
+        232,
+        499,
+        296
+      ]
+    ],
+    "anchor": "bottom-center",
+    "framesPerBeat": 4,
+    "triggered": true
+  },
+  "fire-sprites": {
+    "file": "fire-sprites.png",
+    "frameCount": 4,
+    "frames": [
+      [
+        59,
+        65,
+        455,
+        571
+      ],
+      [
+        602,
+        65,
+        455,
+        571
+      ],
+      [
+        1145,
+        65,
+        455,
+        571
+      ],
+      [
+        1688,
+        65,
+        455,
+        571
+      ]
+    ],
+    "anchor": "bottom-center",
+    "framesPerBeat": 8,
+    "triggered": false
+  },
+  "floating-platform-sprites": {
+    "file": "floating-platform-sprites.png",
+    "frameCount": 4,
+    "frames": [
+      [
+        20,
+        242,
+        503,
+        271
+      ],
+      [
+        563,
+        242,
+        503,
+        271
+      ],
+      [
+        1106,
+        242,
+        503,
+        271
+      ],
+      [
+        1649,
+        242,
+        503,
+        271
+      ]
+    ],
+    "anchor": "bottom-center",
+    "framesPerBeat": 2,
+    "triggered": false
+  }
+}
