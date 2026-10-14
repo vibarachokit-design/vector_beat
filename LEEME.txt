@@ -1,68 +1,54 @@
-VECTOR BEAT — Demo musical cozy (versión 4)
+VECTOR BEAT v6.1 — MÓVIL HORIZONTAL
 
-1. Extrae todo el ZIP en una carpeta.
-2. Abre index.html con Chrome, Edge o Firefox.
-3. Conserva level.js, game.js, music.mp3 y las imágenes junto a index.html.
+Extrae todo el ZIP y abre index.html. Mantén juntos los archivos.
+También puedes usar la demo alojada desde el navegador del celular.
+No requiere instalación. El juego local incluye la canción y todos los gráficos.
+
+NOVEDADES
+Pantalla horizontal completa, sin encabezados ni texto fuera del juego.
+El lienzo se adapta al ancho y alto real del celular y respeta las áreas seguras.
+Si giras el celular a vertical durante la partida, se pausa automáticamente.
+Jugar solicita pantalla completa y orientación horizontal si el navegador lo permite.
+En navegadores sin esa función se usa toda el área visible disponible.
+El manifiesto permite abrirlo sin barras al agregarlo a la pantalla de inicio
+si el navegador ofrece esa opción. Los controles y calibración están en Ajustes.
+
+Velocidad base un 18 % mayor que la versión anterior.
+30 portales: 12 de reglas, 9 naranjas de velocidad ×2 y 9 verdes de retorno ×1.
+El naranja duplica exactamente la velocidad de avance inmediatamente anterior;
+el verde recupera la velocidad base del tramo. No se acumulan aumentos infinitos.
+Los tramos finales tienen secuencias más densas de conos, rocas y fogatas.
+Enemigos voladores con alas animadas y movimiento periódico: aparecen en suelo,
+techo y vuelo. Su tamaño y oscilación aumentan después del pulso 160.
+El mapa define cada enemigo con beat, y, radius, amplitude y color.
 
 CONTROLES
-Espacio, flecha arriba, clic o toque: saltar (mantén para subir más).
-Pulsa otra vez en el aire: doble salto.
-En el modo vuelo: mantén para subir, suelta para bajar.
-P pausa · R reinicia · Espacio en la pantalla final: volver a jugar al instante.
-Modo práctica: C (o el botón «◆ Punto») guarda tu posición, X quita el último punto.
+Toca cualquier parte libre del escenario para saltar. Otro toque: doble salto.
+Mantén para un salto más alto. En vuelo: mantén para subir, suelta para bajar.
+Toca los anillos al pasar. Los trampolines se activan automáticamente.
+Ⅱ pausa. En práctica, ＋ coloca un checkpoint y − elimina el último.
+Teclado: Espacio o ↑ salta, P pausa, C checkpoint, Z elimina, R reintenta.
+Las estadísticas completas se despliegan al terminar. No tapan la partida.
 
-SEÑALES Y PORTALES
-↑ salto · ↑↑ doble salto · ↓ salto desde el techo · ◎ anillo (tócalo al pasar)
-↟ trampolín automático hacia la ruta alta (no saltes, písalo)
-Portales: » más velocidad · ⇅ gravedad invertida (corres por el techo) · ≋ vuelo
+MÚSICA
+Se conservan los 74 compases, 296 pulsos y duración completa de Nivel 13.
+El reloj de reproducción gobierna la física y todos los movimientos del mundo.
+Los cambios de velocidad modifican la distancia por pulso: no aceleran el audio.
+Los obstáculos y el portal final usan la misma integral de velocidad.
+El evento ended del audio activa el final; duración de metadatos: 192,048 s.
+Calibración compensa el desfase de entrada de tu dispositivo.
 
-NOVEDADES DE LA VERSIÓN 4 (inspiradas en el diseño de los juegos de ritmo)
-1. Reintento rápido y modo práctica
-   - Reapareces en menos de medio segundo; un contador muestra el número de intento.
-   - Modo práctica: vidas infinitas y puntos de control propios. Además se guarda
-     uno automático cada 4 pulsos en terreno seguro. No da estrellas ni guarda cristales.
-2. Nivel hecho a mano para la canción
-   - El nivel ya no sale de una fórmula: está escrito en level.js, evento por evento,
-     sobre los acentos reales de «Nivel 13» (medidos con análisis de audio).
-   - La explosión de la canción (pulso 32) y su segundo golpe (64) traen portal de
-     velocidad; la pausa del final es más tranquila; el cierre es un gran salto con anillo.
-   - Para cambiar el nivel basta con editar la lista de level.js.
-3. Anillos de ritmo: se tocan justo al pasar por ellos y se califican como un salto.
-   También hay un anillo secreto que no se califica.
-4. Portales que cambian las reglas: velocidad (pulsos 32, 64 y 96), vuelo entre
-   columnas de cristal (48–56, las notas siguen los contratiempos de la canción) y
-   gravedad invertida en el techo (76–88).
-5. El mundo baila con la música: cada tramo tiene su paleta de colores (con transición
-   suave), y los golpes fuertes de la canción hacen un destello y un pequeño golpe de cámara.
-6. Secretos y colores del cubo
-   - 3 cristales secretos: uno saltando desde la segunda isla de la primera ruta alta,
-     otro subiendo pegado al techo en el tramo de vuelo y otro tocando el anillo
-     escondido del techo. Cuentan al terminar el nivel en el modo normal.
-   - 7 colores para el cubo, que se desbloquean juntando estrellas y cristales (hasta 6).
+ARCHIVOS
+index.html: interfaz. game.js: motor y dibujo. level-map.js: mapa local.
+level-map.json: copia editable/importable desde Ajustes. Protocolo de mapa v5
+con extensiones mobile, enemies y portales kind speed/reset de esta versión v6.
+score.svg y score-timeline.json conservan la partitura original y su análisis.
+sprites-preview.html muestra las hojas de animación.
+Los récords de esta dificultad se guardan aparte. Se conservan los colores.
 
-ESTRELLAS
-★ llegar al portal · ★★ 60 % de las notas y 60 % de precisión ·
-★★★ 85 % de las notas, 80 % de precisión y al menos 2 corazones.
-
-SE MANTIENE DE LAS VERSIONES ANTERIORES
-Calificación al pulso (Perfecto, Bien, Temprano/Tarde, Fallo), combo y multiplicador,
-calibración del retraso, auroras con combo, estela, trampolines y rutas altas,
-doble salto, conos que bailan, rocas, fogatas, celular sin deformar.
-
-CÓDIGO
-index.html: interfaz y estilos.
-level.js: el mapa del nivel (eventos por pulso, paletas, acentos de la canción).
-game.js: física, modos (carrera, techo, vuelo), puntaje, práctica, calibración y dibujo.
-sprites.json y sprites-preview.html: hojas animadas y su vista previa.
-
-No requiere instalación ni conexión a Internet.
-
-VALIDACIÓN (recorridos automáticos en Chromium, con la música al doble de velocidad)
-- Saltos exactos: llega al portal sin daño, 67/67 notas, ★★★ (incluye vuelo y techo).
-- Buscando secretos: los 3 cristales, sin daño, ★★★.
-- Toques cortos (sin mantener): ★★★ y los 3 cristales.
-- Saltos 90 ms tarde: llega al portal, ★★, y sugiere calibrar.
-- Práctica con un error a propósito en el techo: reaparece boca abajo en su último
-  punto y termina el nivel.
-- Sin tocar: pierde los tres corazones al inicio.
-Falta probar a mano la sensación de juego en celulares reales.
+VALIDACIÓN
+Recorrido completo sin choques, tres estrellas y ruta de tres cristales.
+Los 9 incrementos ×2 se verificaron con la distancia real recorrida.
+Checkpoint con velocidad ×2, práctica, colisión de enemigo, reloj detenido,
+final con dos duraciones MP3 y geometría en cinco tamaños horizontales.
+No se ha verificado visualmente en navegador ni en un teléfono físico.

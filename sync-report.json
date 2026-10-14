@@ -1,0 +1,40 @@
+{
+  "durationSecondsMetadata": 192.048,
+  "durationSecondsDecoded": 192.01351473922904,
+  "scoreMeasures": 74,
+  "beats": 296,
+  "scorePrintedBpm": 93,
+  "audioFittedBpm": 92.49951114045628,
+  "usedBpm": 92.5,
+  "usedOffsetSeconds": 0.01706522,
+  "gridFitMedianAbsoluteErrorMs": 3.4326149545336193,
+  "gridFit95PercentAbsoluteErrorMs": 17.013370124004723,
+  "analysisNotes": "Las cifras de ajuste estiman transitorios; no son una medición de latencia de parlantes. El evento ended del audio controla la llegada, con su duración real en cada navegador.",
+  "audioSHA256": "4a57464d6bc31e0028205653db066995ff18ceb64c42e78a6cd9a8e84ea61134",
+  "tests": [
+    "recorrido completo sin colisiones",
+    "ruta de tres estrellas",
+    "ruta de tres cristales",
+    "checkpoint en el aire después del pulso 245",
+    "aislamiento del modo práctica",
+    "sin avance si el reloj de audio está detenido",
+    "cierre tanto con duración de metadatos como decodificada",
+    "pausa justo al final",
+    "dibujado balanceado del final"
+  ],
+  "browserVisualQA": false,
+  "mobileVersion": 6,
+  "baseSpeedFactor": 1.18,
+  "portalCount": 30,
+  "speedPortals": 9,
+  "speedMultiplier": 2,
+  "enemyCount": 34,
+  "mobileTests": [
+    "x2 derivative at 9 portals",
+    "x1 reset",
+    "enemy collision",
+    "boosted checkpoint",
+    "5 landscape sizes",
+    "pause on portrait rotation"
+  ]
+}

@@ -1,32 +1,31 @@
 'use strict';
 // ============================================================================
-// VECTOR BEAT v4 — juego de saltos sincronizado con la música
-// El nivel se lee de level.js (mapa hecho a mano sobre los acentos de la canción).
+// VECTOR BEAT v6.1 — móvil horizontal — juego de saltos sincronizado con la música
 // Secciones: configuración · arte · audio y reloj · estado · nivel · ritmo y
-//            puntaje · física · efectos · dibujo · interfaz · práctica ·
-//            calibración · colores del cubo · eventos
+//            puntaje · física · efectos · dibujo · interfaz · calibración · eventos
 // ============================================================================
 
 // ---------------------------------------------------------------- configuración
 const canvas = document.getElementById('game'), ctx = canvas.getContext('2d');
 const $ = id => document.getElementById(id);
-const LEVEL = window.LEVEL;
 
-const BPM = LEVEL.bpm, BEAT = 60 / BPM, OFFSET = LEVEL.offset, END_BEAT = LEVEL.endBeat;
-const PLAYER_X = 270, FLOOR = 480, CEIL = 200, RADIUS = 32, MID_Y = (FLOOR + CEIL) / 2;
-const SECTION_BEATS = 32, DISTANCES = LEVEL.speeds;
-const CHECKPOINTS = [0, 32, 62.5, 95.5];   // dónde reapareces en el modo normal (suelo seguro)
+const BPM=window.VECTOR_LEVEL.bpm,BEAT=60/BPM,OFFSET=window.VECTOR_LEVEL.offset,END_BEAT=window.VECTOR_LEVEL.endBeat;
+const PLAYER_X = 160, FLOOR = 480, RADIUS = 32;
+let LEVEL = structuredClone(window.VECTOR_LEVEL);
+const CEILING = 180;
+let finaleTier=0,finalePops=0;let enemies=[];
+let mode='normal', playerRule='run', gravityDir=1, attempt=0, lastAttemptProgress=0, personalCheckpoints=[], rings=[], portals=[], secrets=[], accentIndex=0, cameraKick=0, flash=0;
+let collection=load('vectorbeat.collection4',[]), selectedSkin=load('vectorbeat.skin4','mint'), selectedFace=load('vectorbeat.face4','classic');
+const SKINS=[{id:'mint',name:'Menta',stars:0,color:'#80cfbb',filter:'none'},{id:'lavender',name:'Lavanda',stars:1,color:'#bc9fdf',filter:'hue-rotate(65deg)'},{id:'peach',name:'Durazno',stars:2,color:'#edb399',filter:'hue-rotate(175deg)'},{id:'gold',name:'Dorado',stars:3,color:'#e3c477',filter:'hue-rotate(230deg) saturate(.8)'}];
+const reducedMotion=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches||false;
 
 // Física
-const JUMP_SPEED = 480, DOUBLE_SPEED = 425, SPRING_SPEED = 650, RING_SPEED = 560;
+const JUMP_SPEED = 480, DOUBLE_SPEED = 425, SPRING_SPEED = 650;
 const GRAVITY_HELD = 1100, GRAVITY = 1450;
-const FLY_UP = 1700, FLY_DOWN = 1300, FLY_MAX = 400;
 const JUMP_BUFFER = .12;   // s: un toque poco antes de aterrizar igual cuenta
 const COYOTE_TIME = .08;   // s: aún puedes saltar justo después de salir de un borde
 const HIT_RADIUS = 26;     // radio de choque del personaje (el dibujo mide 32)
 const SPRING_BOOST = .55;  // s de impulso alto tras el trampolín
-const RING_REACH = 46;     // distancia para activar un anillo
-const RESPAWN_DELAY = .45, PRACTICE_DELAY = .3;
 
 // Ventanas de calificación (segundos respecto al pulso marcado)
 const WIN_PERFECT = .065, WIN_GOOD = .12, WIN_OK = .2;
@@ -46,8 +45,7 @@ function load(key, fallback) {
 }
 function save(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch {} }
 let calib = load('vectorbeat.calib', 0);   // segundos; positivo = el jugador toca tarde
-let best = {stars: 0, score: 0, progress: 0, crystals: [false, false, false], attempts: 0, ...load('vectorbeat.best4', {})};
-let skinId = load('vectorbeat.skin', 'menta');
+let best=load('vectorbeat.bestMobile6',{stars:0,score:0,progress:0});let unlockedStars=load('vectorbeat.unlockedStars5',load('vectorbeat.best4',{stars:0}).stars||0);
 
 // --------------------------------------------------------------------------- arte
 const ART_BOUNDS = {platform: [16, 206, 2141, 394], character: [112, 98, 1059, 1058]};
@@ -111,215 +109,109 @@ function tone(freq, duration = .13, volume = .025, when = 0) {
 // Interpolamos con el reloj del sistema entre actualizaciones para un movimiento suave.
 let rawLast = -1, rawPerf = 0;
 function syncClock() { rawLast = song.currentTime; rawPerf = performance.now(); }
-function songClock(now = performance.now()) {
-  const raw = song.currentTime;
-  if (raw !== rawLast) { rawLast = raw; rawPerf = now; }
-  if (song.paused) return raw;
-  return raw + Math.min(.25, Math.max(0, (now - rawPerf) / 1000) * song.playbackRate);
-}
+// The media clock is authoritative: never advance from wall time while buffering or paused.
+function songClock(){return song.currentTime}
+function songEndTime(){return Number.isFinite(song.duration)&&song.duration>0?song.duration:LEVEL.durationSeconds}
+function progressPercent(time=musicTime){return Math.floor(Math.max(0,Math.min(100,time/songEndTime()*100)))}
+function completeSong(){if(state!=='playing')return;const end=songEndTime();if(end>musicTime){const n=Math.max(1,Math.ceil((end-musicTime)/(1/120))),dt=(end-musicTime)/n;for(let i=0;i<n&&state==='playing';i++)physics(dt,musicTime+dt)}if(state==='playing'){musicTime=end;world=distanceAt(END_BEAT);maxReachedBeat=Math.max(maxReachedBeat,END_BEAT);victory();updateHUD()}}
 
 function beatAt(t) { return Math.max(0, (t - OFFSET) / BEAT); }
 function timeAt(b) { return OFFSET + b * BEAT; }
-function distanceAt(b) {
-  b = Math.max(0, b); let distance = 0;
-  for (let i = 0; i < 4; i++) distance += Math.max(0, Math.min(SECTION_BEATS, b - i * SECTION_BEATS)) * DISTANCES[i];
-  return distance;
-}
-function sectionAt(b) { return Math.min(3, Math.floor(Math.max(0, b) / SECTION_BEATS)); }
+function speedAt(b){let multiplier=1;for(const p of LEVEL.portals){if(beatAt(p.time)>b)break;if(p.kind==='speed')multiplier*=2;else if(p.kind==='reset'||!p.kind)multiplier=1}return multiplier}
+let speedSegments=[];function rebuildSpeedSegments(){const cuts=[0,END_BEAT,...LEVEL.sections.map(s=>s.startBeat),...LEVEL.portals.map(p=>beatAt(p.time))].sort((a,b)=>a-b);speedSegments=[];let distance=0;for(let i=1;i<cuts.length;i++){const start=cuts[i-1],end=cuts[i],mid=(start+end)/2,rate=LEVEL.sections[sectionAt(mid)].pixelsPerBeat*1.18*speedAt(mid);if(end>start)speedSegments.push({start,end,distance,rate});distance+=(end-start)*rate}}function distanceAt(b){b=Math.max(0,b);if(!speedSegments.length)rebuildSpeedSegments();for(const s of speedSegments)if(b<=s.end)return s.distance+Math.max(0,b-s.start)*s.rate;const s=speedSegments.at(-1);return s.distance+(b-s.start)*s.rate}
+function sectionAt(b){let i=0;for(let k=0;k<LEVEL.sections.length;k++)if(b>=LEVEL.sections[k].startBeat)i=k;return i}
+function ruleAt(t){let rule='run';for(const p of LEVEL.portals)if(t>=p.time&&!p.kind)rule=p.rule;return rule}
+function setRule(rule,snap=false){playerRule=rule;gravityDir=rule==='invert'?-1:1;if(snap){y=rule==='invert'?CEILING+RADIUS:rule==='fly'?FLOOR-RADIUS:FLOOR-RADIUS;vy=0;grounded=rule!=='fly';jumpsUsed=0;held=false;springBoost=0;lastGroundT=musicTime}}
+function resetPortals(t){for(const p of portals)p.entered=p.time<=t;setRule(ruleAt(t));accentIndex=LEVEL.accents.findIndex(a=>a.time>t);if(accentIndex<0)accentIndex=LEVEL.accents.length}
+
+
 const at = b => PLAYER_X + distanceAt(b);
 
 // -------------------------------------------------------------------------- estado
-let state = 'menu', sound = true, held = false, practice = false;
+let state = 'menu', sound = true, held = false;
 let y = FLOOR - RADIUS, vy = 0, grounded = true, world = 0;
-let mode = 'run', grav = 1;   // mode: 'run' o 'fly' · grav: 1 normal, -1 corriendo por el techo
 let lives = 3, notes = 0, bonusNotes = 0, musicTime = 0, animTime = 0, lastFrame = 0;
 let reaction = 0, reactionKind = '', inv = 0, landing = 0, celebrate = 0, springBoost = 0;
 let seekPending = false, checkpointBeat = 0, errorText = '', winning = false, maxReachedBeat = 0;
 let jumpQueued = null, lastGroundT = 0, jumpsUsed = 0, route = null;  // route: {from, to} en pulsos tras un trampolín
 let particles = [], floaters = [], trail = [];
-let platforms = [], gems = [], obstacles = [], jumpCues = [], trampolines = [], rings = [], portals = [], crystals = [], flyZones = [];
-let score = 0, combo = 0, stats = newStats(), checkpoint = null, attempts = 0, runCrystals = [false, false, false];
-let practicePoints = [];  // puntos de control del modo práctica
+let platforms = [], gems = [], obstacles = [], jumpCues = [], trampolines = [];
+let score = 0, combo = 0, stats = newStats(), checkpoint = null;
 
 function newStats() { return {perfect: 0, good: 0, early: 0, late: 0, miss: 0, bounce: 0, maxCombo: 0, hurts: 0}; }
 
 // --------------------------------------------------------------------------- nivel
-function flyPath(b, zone) {  // altura ideal del vuelo (las notas siguen esta curva)
-  return MID_Y - 80 * Math.sin(Math.PI * (b - zone.from) / 2);
-}
-function inZone(b, kindOn, kindOff) {
-  let on = false;
-  for (const p of portals) { if (p.b > b) break; if (p.kind === kindOn) on = true; if (p.kind === kindOff) on = false; }
-  return on;
-}
-
-function makeLevel() {
-  platforms = []; obstacles = []; gems = []; jumpCues = []; trampolines = []; rings = []; portals = []; crystals = []; flyZones = [];
-  const gaps = [], cgaps = [];
-  const sec = b => sectionAt(b);
-  const cue = (beat, extra = {}) => jumpCues.push({beat, x: at(beat), result: null, ...extra});
-  const spike = (beat, height, extra = {}) => obstacles.push({x: at(beat), y: FLOOR, height, ...extra});
-  const shard = (beat, height) => obstacles.push({x: at(beat), y: CEIL, height, kind: 'shard', ceil: true});
-  const gem = (beat, gy, extra = {}) => gems.push({x: at(beat), y: gy, taken: false, ...extra});
-  const mirror = gy => FLOOR + CEIL - gy;  // altura equivalente cuando corres por el techo
-
-  for (const p of LEVEL.events.filter(e => e.t === 'portal')) portals.push({b: p.b, x: at(p.b), kind: p.kind, done: false});
-  portals.sort((a, b) => a.b - b.b);
-
-  for (const e of LEVEL.events) {
-    const b = e.b;
-    switch (e.t) {
-      case 'jump':
-        cue(b, {double: e.obs === 'three'});
-        if (e.obs === 'gap') gaps.push({start: at(b + .4), end: at(b + .94)});
-        else {
-          spike(b + .5, sec(b) === 0 ? 42 : 50);
-          if (e.obs === 'two' || e.obs === 'three') spike(b + .76, 42);
-          if (e.obs === 'three') { spike(b + 1.02, 56); cue(b + .5, {air: true, double: true}); }
-        }
-        gem(b + .66, FLOOR - 147);
-        break;
-      case 'double':
-        cue(b, {double: true}); cue(b + .5, {air: true, double: true});
-        gaps.push({start: at(b + .4), end: at(b + 1.65)});
-        platforms.push({x: at(b + 1.2), w: distanceAt(b + 1.96) - distanceAt(b + 1.2), y: 420, floating: true});
-        gem(b + 1.1, 295);
-        break;
-      case 'ring':
-        cue(b); cue(b + .5, {ring: true});
-        rings.push({b: b + .5, x: at(b + .5), y: 360, used: false});
-        gaps.push({start: at(b + .4), end: at(b + 1.75)});
-        gem(b + 1.15, 250);
-        break;
-      case 'spring': {
-        trampolines.push({x: at(b), y: FLOOR, usedAt: -10, beat: b});
-        cue(b, {spring: true});
-        platforms.push(
-          {x: at(b + .83), w: distanceAt(b + 1.58) - distanceAt(b + .83), y: 340, floating: true, route: true},
-          {x: at(b + 1.63), w: distanceAt(b + 2.48) - distanceAt(b + 1.63), y: 370, floating: true, route: true},
-          {x: at(b + 2.52), w: distanceAt(b + 3.1) - distanceAt(b + 2.52), y: 395, floating: true, route: true},
-        );
-        for (const q of [.96, 1.3, 1.93, 2.28, 2.83]) gem(b + q, q < 1.6 ? 282 : q < 2.5 ? 312 : 340, {bonus: true});
-        break;
-      }
-      case 'cjump':
-        cue(b, {ceil: true});
-        shard(b + .5, 48); if (e.obs === 'two') shard(b + .76, 42);
-        gem(b + .66, mirror(FLOOR - 147));
-        break;
-      case 'cring':
-        cue(b, {ceil: true}); cue(b + .5, {ring: true, ceil: true});
-        rings.push({b: b + .5, x: at(b + .5), y: mirror(360), used: false, ceil: true});
-        cgaps.push({start: at(b + .4), end: at(b + 1.75)});
-        gem(b + 1.15, mirror(250));
-        break;
-      case 'fly': {
-        const zone = {from: e.from, to: e.to}; flyZones.push(zone);
-        // Columnas alternadas: suelo cuando la ruta va arriba, techo cuando va abajo
-        for (let k = 1, i = 0; e.from + k < e.to; k += 2, i++) {
-          const pb = e.from + k, top = i % 2 === 0;
-          obstacles.push({x: at(pb), y: top ? FLOOR : CEIL, height: 140, kind: 'pillar', ceil: !top});
-        }
-        for (let q = e.from + .5; q < e.to; q += 1) gem(q, flyPath(q, zone));
-        break;
-      }
-      case 'secretRing':
-        rings.push({b, x: at(b), y: inZone(b, 'flip', 'unflip') ? CEIL + RADIUS : FLOOR - RADIUS, used: false, secret: true});
-        break;
-      case 'crystal':
-        crystals.push({x: at(b), y: e.y, i: crystals.length, taken: false});
-        break;
-    }
-  }
-  // Notas bajas en los pulsos tranquilos (fuera de los tramos especiales)
-  for (let b = 4; b < END_BEAT - 2; b += 4) {
-    if (jumpCues.some(c => Math.abs(c.beat - b) < 1.2) || inZone(b, 'fly', 'land') || inZone(b, 'flip', 'unflip')) continue;
-    gem(b + .5, FLOOR - 55);
-  }
-
-  // Suelo continuo con huecos reales
-  gaps.sort((a, b) => a.start - b.start);
-  let start = 0;
-  for (const gap of gaps) { platforms.push({x: start, w: gap.start - start, y: FLOOR}); start = gap.end; }
-  platforms.push({x: start, w: at(END_BEAT) + 1100 - start, y: FLOOR});
-  // Techo en los tramos de vuelo y de gravedad invertida
-  const ceilSpans = [];
-  for (const [on, off] of [['flip', 'unflip'], ['fly', 'land']]) {
-    for (const p of portals.filter(p => p.kind === on)) {
-      const end = portals.find(q => q.kind === off && q.b > p.b);
-      if (end) ceilSpans.push([at(p.b - .6), at(end.b + .3)]);
-    }
-  }
-  for (const [s, e] of ceilSpans) {
-    let x = s;
-    for (const g of cgaps.filter(g => g.start > s && g.end < e).sort((a, b) => a.start - b.start)) { platforms.push({x, w: g.start - x, y: CEIL, ceil: true}); x = g.end; }
-    platforms.push({x, w: e - x, y: CEIL, ceil: true});
-  }
-  platforms.sort((a, b) => a.y - b.y);  // primero las más altas: se aterriza en la de arriba
-
-  // Tipos de obstáculo del suelo y su forma de choque
-  obstacles.sort((a, b) => a.x - b.x);
-  let n = 0;
-  for (const o of obstacles) {
-    if (!o.kind) {
-      o.kind = ['cone', 'rock', 'cone', 'fire'][n++ % 4];
-      if (o.kind === 'rock') o.height = Math.min(o.height, 46);
-      if (o.kind === 'fire') o.height = 52;
-    }
-    o.hull = hullFor(o);
-  }
-  gems.sort((a, b) => a.x - b.x); jumpCues.sort((a, b) => a.beat - b.beat); rings.sort((a, b) => a.b - b.b);
+function makeLevel(){rebuildSpeedSegments();enemies=(LEVEL.enemies||[]).map(e=>({...e,x:at(e.beat)}));platforms=[];obstacles=[];gems=[];jumpCues=[];trampolines=[];rings=[];secrets=[];portals=LEVEL.portals.map(p=>({...p,x:at(beatAt(p.time)),entered:false}));const gaps=[];
+ const cue=(time,extra={})=>{const beat=beatAt(time);jumpCues.push({id:extra.id||'cue-'+jumpCues.length,time,beat,x:at(beat),result:null,...extra})};
+ const note=(beat,y,extra={})=>gems.push({id:'note-'+gems.length,x:at(beat),y,taken:false,...extra});
+ const spike=(beat,kind,height,dir)=>obstacles.push({x:at(beat),y:dir===-1?CEILING:FLOOR,height,kind,gravity:dir});
+ for(const phrase of LEVEL.phrases){const b=beatAt(phrase.time),dir=phrase.surface==='ceiling'?-1:1,base=dir===-1?CEILING:FLOOR,high=d=>base-dir*d;cue(phrase.time,{id:phrase.id,double:['ring-gap','triple'].includes(phrase.pattern),spring:phrase.pattern==='spring'});
+  if(phrase.pattern==='gap'||phrase.pattern==='ring-gap'){const long=phrase.pattern==='ring-gap';gaps.push({start:at(b+.4),end:at(b+(long?1.65:.94)),gravity:dir});if(long){platforms.push({x:at(b+1.2),w:distanceAt(b+1.96)-distanceAt(b+1.2),y:high(60),gravity:dir,floating:true});const time=phrase.time+BEAT*.5,id='ring-'+phrase.id;const ring={id,time,beat:b+.5,x:at(b+.5),y:high(RADIUS+92),used:false,optional:false,gravity:dir};rings.push(ring);cue(time,{id:id+'-cue',air:true,ringId:id,double:true});note(b+1.2,high(215),{bonus:true})}}
+  else if(phrase.pattern==='spring'){trampolines.push({x:at(b),y:base,gravity:dir,beat:b,usedAt:-10});for(const [from,to,h]of [[.83,1.58,140],[1.63,2.48,110],[2.52,3.1,85]])platforms.push({x:at(b+from),w:distanceAt(b+to)-distanceAt(b+from),y:high(h),gravity:dir,floating:true,route:true});for(const q of [.96,1.3,1.93,2.28,2.83])note(b+q,high(q<1.6?198:q<2.5?168:140),{bonus:true})}
+  else {const count=phrase.pattern==='triple'?3:phrase.pattern==='pair'?2:1;for(let i=0;i<count;i++)spike(b+.5+i*.26,phrase.obstacle,i?42:50,dir);if(count===3)cue(phrase.time+BEAT*.5,{air:true,double:true,id:phrase.id+'-double'})}
+  note(b+.66,high(147));
+ }
+ const addSurface=(dir,a,b)=>{const cut=gaps.filter(g=>g.gravity===dir&&g.end>a&&g.start<b).sort((a,b)=>a.start-b.start);let start=a;for(const gap of cut){const gs=Math.max(a,gap.start),ge=Math.min(b,gap.end);if(gs>start)platforms.push({x:start,w:gs-start,y:dir===-1?CEILING:FLOOR,gravity:dir});start=Math.max(start,ge)}if(start<b)platforms.push({x:start,w:b-start,y:dir===-1?CEILING:FLOOR,gravity:dir})};
+ addSurface(1,0,at(END_BEAT)+1100);for(let i=0;i<LEVEL.portals.length;i++)if(!LEVEL.portals[i].kind&&LEVEL.portals[i].rule==='invert'){const from=beatAt(LEVEL.portals[i].time),to=beatAt(LEVEL.portals.slice(i+1).find(p=>!p.kind)?.time??songEndTime());addSurface(-1,at(from)-250,at(to)+80)}
+ for(const o of LEVEL.flightObstacles){const dir=o.surface==='ceiling'?-1:1;obstacles.push({x:at(beatAt(o.time)),y:dir===-1?120:FLOOR,height:o.height,kind:o.kind,gravity:dir,flight:true})}
+ for(const n of LEVEL.flightNotes)note(n.beat,n.y,{flight:true});for(const n of LEVEL.outroNotes||[])note(n.beat,n.y,{outro:true});
+ for(const item of LEVEL.rings){const r={...item,beat:beatAt(item.time),x:at(beatAt(item.time)),used:false,gravity:1};rings.push(r);cue(item.time,{id:item.id+'-cue',air:true,ringId:item.id,optional:item.optional})}
+ secrets=LEVEL.secrets.map(c=>({...c,x:at(c.beat),taken:false}));
+ platforms.sort((a,b)=>a.gravity*a.y-b.gravity*b.y);obstacles.sort((a,b)=>a.x-b.x);for(const o of obstacles)o.hull=hullFor(o);gems.sort((a,b)=>a.x-b.x);jumpCues.sort((a,b)=>a.time-b.time);rings.sort((a,b)=>a.time-b.time);
 }
 
-function hullFor(o) {  // contorno en puntos relativos a la base (dy negativo = hacia arriba)
+
+function hullFor(o) {
   const pts = [], h = o.height;
-  if (o.kind === 'rock') {
+  if (o.kind === 'rock') {  // joroba redondeada
     for (let i = 0; i <= 12; i++) { const a = Math.PI * i / 12; pts.push([Math.cos(a) * 22, -Math.sin(a) * h]); }
-  } else if (o.kind === 'pillar') {
-    for (let i = 0; i <= 10; i++) { const f = i / 10; pts.push([-22, -h * f], [22, -h * f], [-22 + 44 * f, -h]); }
-  } else {
-    const half = o.kind === 'fire' ? 17 : o.kind === 'shard' ? 16 : 18, top = o.kind === 'fire' ? h - 6 : h;
+  } else {  // cono y llama: triángulo (la base ancha del cono es casi plana)
+    const half = o.kind === 'fire' ? 17 : 18, top = o.kind === 'fire' ? h - 6 : h;
     for (let i = 0; i <= 8; i++) { const f = i / 8; pts.push([-half * f, -top * (1 - f)], [half * f, -top * (1 - f)]); }
   }
-  return o.ceil ? pts.map(([dx, dy]) => [dx, -dy]) : pts;
+  return pts;
 }
 
 // --------------------------------------------------------------- ritmo y puntaje
 function multiplier() { return 1 + Math.min(3, Math.floor(combo / 8)); }
+
 function addCombo() { combo++; stats.maxCombo = Math.max(stats.maxCombo, combo); if (combo % 8 === 0 && multiplier() > 1) floatText(`×${multiplier()}`, '#754e95', .9, -34); }
 
-// kind: 'ground' (salto normal), 'air' (doble salto), 'ring' (anillo)
-function cueKind(c) { return c.ring ? 'ring' : c.air ? 'air' : 'ground'; }
-function judgeJump(pressT, kind) {
+function judgeJump(pressT, air) {
   const p = pressT - calib;
   let cue = null, d = Infinity;
   for (const c of jumpCues) {
-    if (c.result || cueKind(c) !== kind) continue;
-    const delta = p - timeAt(c.beat);
+    if (c.result || Boolean(c.air) !== air) continue;
+    if(c.ringId)continue;
+    const delta = p - c.time;
     if (Math.abs(delta) < Math.abs(d)) { d = delta; cue = c; }
     if (delta < -WIN_OK) break;
   }
   if (!cue || Math.abs(d) > WIN_OK) return;  // salto libre: ni premia ni castiga
-  const res = Math.abs(d) <= WIN_PERFECT ? 'perfect' : Math.abs(d) <= WIN_GOOD ? 'good' : d < 0 ? 'early' : 'late';
-  cue.result = res; cue.offset = d;
-  stats[res]++; addCombo();
-  score += JUDGE[res].points * multiplier();
-  const label = res === 'perfect' && kind === 'air' ? '¡Doble perfecto!' : res === 'perfect' && kind === 'ring' ? '¡Anillo perfecto!' : JUDGE[res].label;
-  floatText(label, JUDGE[res].color, res === 'perfect' ? 1.15 : 1);
-  tone(JUDGE[res].freq, .07, .012);
+  const kind = Math.abs(d) <= WIN_PERFECT ? 'perfect' : Math.abs(d) <= WIN_GOOD ? 'good' : d < 0 ? 'early' : 'late';
+  cue.result = kind; cue.offset = d;
+  stats[kind]++; addCombo();
+  score += JUDGE[kind].points * multiplier();
+  floatText(air && kind === 'perfect' ? '¡Doble perfecto!' : JUDGE[kind].label, JUDGE[kind].color, kind === 'perfect' ? 1.15 : 1);
+  tone(JUDGE[kind].freq, .07, .012);
 }
 
 function checkMisses(t) {
   for (const c of jumpCues) {
     if (c.result) continue;
-    const ct = timeAt(c.beat);
+    const ct = c.time;
+    if(c.optional && t>ct+WIN_OK){c.result='skip';continue;}
     if (ct > t) break;
     if (t - calib > ct + WIN_OK && route && c.beat > route.from && c.beat < route.to && y < FLOOR - RADIUS - 30) { c.result = 'skip'; continue; }
     if (t - calib > ct + WIN_OK) { c.result = 'miss'; stats.miss++; combo = 0; floatText(JUDGE.miss.label, JUDGE.miss.color, .9); }
   }
 }
 
-function takeSnapshot() { checkpoint = {beat: checkpointBeat, score, stats: {...stats}}; }
+function takeSnapshot(){return {time:musicTime,beat:beatAt(musicTime),y,vy,grounded,jumpsUsed,lastGroundT,playerRule,gravityDir,springBoost,score,notes,bonusNotes,combo,stats:{...stats},route:route?{...route}:null,cues:jumpCues.map(c=>({result:c.result,offset:c.offset})),gems:gems.map(n=>n.taken),secrets:secrets.map(n=>n.taken),rings:rings.map(r=>r.used),pads:trampolines.map(p=>p.usedAt)}}
+function placeCheckpoint(){if(mode!=='practice'||state!=='playing'||seekPending)return;const cp=takeSnapshot();personalCheckpoints.push(cp);if(personalCheckpoints.length>20)personalCheckpoints.shift();checkpoint=cp;floatText('Checkpoint '+Math.floor(cp.beat/END_BEAT*100)+' %','#6b86b2');updateHUD()}
+function removeCheckpoint(){if(mode!=='practice')return;personalCheckpoints.pop();checkpoint=personalCheckpoints.at(-1)||null;floatText(checkpoint?'Checkpoint anterior':'Sin checkpoint','#6b86b2');updateHUD()}
+function restoreSnapshot(cp){musicTime=cp.time;world=distanceAt(cp.beat);y=cp.y;vy=cp.vy;grounded=cp.grounded;jumpsUsed=cp.jumpsUsed;lastGroundT=cp.lastGroundT;playerRule=cp.playerRule;gravityDir=cp.gravityDir;springBoost=cp.springBoost;score=cp.score;notes=cp.notes;bonusNotes=cp.bonusNotes;combo=cp.combo;stats={...cp.stats};route=cp.route?{...cp.route}:null;cp.cues.forEach((v,i)=>Object.assign(jumpCues[i],v));cp.gems.forEach((v,i)=>gems[i].taken=v);cp.secrets.forEach((v,i)=>secrets[i].taken=v);cp.rings.forEach((v,i)=>rings[i].used=v);cp.pads.forEach((v,i)=>trampolines[i].usedAt=v);resetPortals(cp.time)}
+
 
 // Precisión: señales acertadas ponderadas / señales jugadas (un rebote en trampolín cuenta como acierto)
 function accuracy() {
@@ -331,9 +223,9 @@ function accuracy() {
   return total ? sum / total : 0;
 }
 function starRating(win) {
-  if (!win || practice) return 0;
+  if (!win || mode==='practice') return 0;
   const noteFrac = gems.length ? notes / gems.length : 0, acc = accuracy();
-  if (noteFrac >= .85 && acc >= .8 && lives >= 2) return 3;
+  if (noteFrac >= .85 && acc >= .8) return 3;
   if (noteFrac >= .6 && acc >= .6) return 2;
   return 1;
 }
@@ -343,151 +235,34 @@ function hitsObstacle(o) {
   const ox = o.x - world;
   if (Math.abs(ox - PLAYER_X) > HIT_RADIUS + 24) return false;
   const r2 = HIT_RADIUS * HIT_RADIUS;
-  for (const [dx, dy] of o.hull) if ((ox + dx - PLAYER_X) ** 2 + (o.y + dy - y) ** 2 < r2) return true;
-  return false;
-}
-const overX = p => PLAYER_X + world >= p.x && PLAYER_X + world <= p.x + p.w;
-
-// Distancia hasta la superficie hacia donde te lleva la gravedad (Infinity si no hay)
-function distToSurface() {
-  let d = Infinity;
-  for (const p of platforms) {
-    if (!overX(p)) continue;
-    if (grav > 0 && !p.ceil && p.y >= y + RADIUS - 2) d = Math.min(d, p.y - (y + RADIUS));
-    if (grav < 0 && p.ceil && p.y <= y - RADIUS + 2) d = Math.min(d, (y - RADIUS) - p.y);
-  }
-  return d;
-}
-
-function ringInReach() {
-  for (const r of rings) {
-    if (r.used) continue;
-    const dx = r.x - world - PLAYER_X;
-    if (dx > 120) break;
-    if (Math.hypot(dx, r.y - y) < RING_REACH) return r;
-  }
-  return null;
-}
-function ringAhead(t) {  // un anillo a punto de alcanzarse: espera en lugar de gastar el doble salto
-  const speed = DISTANCES[sectionAt(beatAt(t))] / BEAT;
-  for (const r of rings) {
-    if (r.used) continue;
-    const dx = r.x - world - PLAYER_X;
-    if (dx > 0 && dx < speed * .09 + RING_REACH && Math.abs(r.y - y) < RING_REACH * 1.6) return true;
-  }
+  for (const [dx, dy] of o.hull) if ((ox + dx - PLAYER_X) ** 2 + (o.y + dy * (o.gravity||1) - y) ** 2 < r2) return true;
   return false;
 }
 
-function tryJump(t) {
-  if (jumpQueued === null || t < jumpQueued) return;
-  if (mode === 'fly') { jumpQueued = null; return; }
-  const pressT = jumpQueued;
-  const coyote = jumpsUsed === 0 && t - lastGroundT <= COYOTE_TIME && vy * grav >= 0;
-  if (grounded || coyote) {                       // salto desde el suelo (o el techo)
-    jumpQueued = null; vy = -JUMP_SPEED * grav; grounded = false; jumpsUsed = 1; springBoost = 0;
-    tone(440, .09, .012);
-    judgeJump(pressT, 'ground');
-    return;
-  }
-  const ring = ringInReach();
-  if (ring) {                                     // anillo de ritmo: impulso sin gastar el doble salto
-    ring.used = true; jumpQueued = null; vy = -RING_SPEED * grav; springBoost = .25;
-    tone(1046, .12, .02); burst(ring.x, ring.y, 16);
-    if (ring.secret) floatText('¡Anillo secreto!', '#9a6fc0', 1);
-    else judgeJump(pressT, 'ring');
-    return;
-  }
-  // Si está a punto de aterrizar o de tocar un anillo, guardamos el toque.
-  const landingSoon = vy * grav > 0 && distToSurface() / Math.abs(vy) <= JUMP_BUFFER;
-  if (!landingSoon && !ringAhead(t) && jumpsUsed < 2) {   // doble salto
-    const second = jumpsUsed === 1;
-    jumpQueued = null; vy = -(second ? DOUBLE_SPEED : JUMP_SPEED) * grav; jumpsUsed = 2; springBoost = 0;
-    tone(659, .09, .018); burst(world + PLAYER_X, y, 9);
-    judgeJump(pressT, second ? 'air' : 'ground');
-    return;
-  }
-  if (t - pressT > JUMP_BUFFER) jumpQueued = null;
+function platformBelow(){let top=Infinity;for(const p of platforms)if(p.gravity===gravityDir&&PLAYER_X+world>=p.x&&PLAYER_X+world<=p.x+p.w&&gravityDir*p.y>=gravityDir*y+RADIUS-2)top=Math.min(top,gravityDir*p.y);return top}
+function triggerRing(pressT){const ring=rings.find(r=>!r.used&&Math.abs(r.x-world-PLAYER_X)<72&&Math.abs(r.y-y)<72&&Math.abs(pressT-calib-r.time)<=WIN_GOOD);if(!ring)return false;const delta=pressT-calib-ring.time,kind=Math.abs(delta)<=WIN_PERFECT?'perfect':'good';ring.used=true;const c=jumpCues.find(c=>c.ringId===ring.id);if(c){c.result=kind;c.offset=delta}stats[kind]++;addCombo();score+=JUDGE[kind].points*multiplier();vy=playerRule==='fly'?-300:-560*gravityDir;grounded=false;jumpsUsed=1;springBoost=.48;route={from:ring.beat,to:ring.beat+3};floatText(kind==='perfect'?'¡Anillo perfecto!':'Anillo · Bien',JUDGE[kind].color,1.15);burst(ring.x,ring.y,22);tone(JUDGE[kind].freq,.1,.02);return true}
+function tryJump(t){if(jumpQueued===null||t<jumpQueued)return;const pressT=jumpQueued;if(triggerRing(pressT)){jumpQueued=null;return}if(playerRule==='fly'){jumpQueued=null;return}const coyote=jumpsUsed===0&&t-lastGroundT<=COYOTE_TIME&&vy*gravityDir>=0;
+ if(grounded||coyote){jumpQueued=null;vy=-JUMP_SPEED*gravityDir;grounded=false;jumpsUsed=1;springBoost=0;tone(440,.09,.012);judgeJump(pressT,false);return}
+ const landingSoon=vy*gravityDir>0&&(platformBelow()-(gravityDir*y+RADIUS))/(vy*gravityDir)<=JUMP_BUFFER;
+ if(!landingSoon&&jumpsUsed<2){const second=jumpsUsed===1;jumpQueued=null;vy=-(second?DOUBLE_SPEED:JUMP_SPEED)*gravityDir;jumpsUsed=2;springBoost=0;tone(659,.09,.018);burst(world+PLAYER_X,y,9);judgeJump(pressT,second);return}if(t-pressT>JUMP_BUFFER)jumpQueued=null;
 }
 
-function applyPortal(p, silent = false) {
-  p.done = true;
-  if (p.kind === 'flip') { grav = -1; grounded = false; jumpsUsed = 1; }
-  if (p.kind === 'unflip') { grav = 1; grounded = false; jumpsUsed = 1; }
-  if (p.kind === 'fly') { mode = 'fly'; grounded = false; vy *= .4; jumpQueued = null; }
-  if (p.kind === 'land') { mode = 'run'; grounded = false; jumpsUsed = 1; }
-  if (silent) return;
-  const label = {speed: '¡Más rápido!', flip: '¡Gravedad invertida!', unflip: 'Gravedad normal', fly: '¡A volar! Mantén para subir', land: 'De vuelta al suelo'}[p.kind];
-  floatText(label, '#754e95', .9, -34); tone(p.kind === 'speed' ? 1175 : 523, .2, .02);
+
+function physics(dt,t){musicTime=t;const beat=beatAt(t);world=distanceAt(beat);maxReachedBeat=Math.max(maxReachedBeat,beat);inv=Math.max(0,inv-dt);landing=Math.max(0,landing-dt);springBoost=Math.max(0,springBoost-dt);cameraKick=Math.max(0,cameraKick-dt);flash=Math.max(0,flash-dt);
+ for(const p of portals)if(!p.entered&&t>=p.time){p.entered=true;if(!p.kind)setRule(p.rule,true);cameraKick=.25;flash=.1;floatText(p.kind==='speed'?'VELOCIDAD ×2':p.kind==='reset'?'RITMO BASE':p.rule==='fly'?'VUELO':p.rule==='invert'?'GRAVEDAD ↓':'SALTO ↑','#755788',.8)}
+ while(accentIndex<LEVEL.accents.length&&t>=LEVEL.accents[accentIndex].time){const a=LEVEL.accents[accentIndex++];if(a.strength>.45){cameraKick=Math.max(cameraKick,.12+a.strength*.16);flash=.08}}
+ tryJump(t);const wasGrounded=grounded,old=y;
+ if(playerRule==='fly'){vy=Math.max(-300,Math.min(300,vy+(held?-1000:800)*dt));y+=vy*dt;if(y<RADIUS+105){y=RADIUS+105;vy=Math.max(0,vy)}if(y>FLOOR-RADIUS){y=FLOOR-RADIUS;vy=Math.min(0,vy)}grounded=false}
+ else{vy+=((held||springBoost>0)&&vy*gravityDir<0?GRAVITY_HELD:GRAVITY)*gravityDir*dt;y+=vy*dt;grounded=false;for(const p of platforms){if(p.gravity!==gravityDir)continue;const py=p.y*gravityDir;if(PLAYER_X+world>=p.x&&PLAYER_X+world<=p.x+p.w&&vy*gravityDir>=0&&old*gravityDir+RADIUS<=py+2&&y*gravityDir+RADIUS>=py){y=p.y-RADIUS*gravityDir;if(!wasGrounded)landing=.17;vy=0;grounded=true;lastGroundT=t;jumpsUsed=0;break}}if(grounded)tryJump(t)}
+ for(const o of obstacles){if(o.x-world>PLAYER_X+60)break;if(hitsObstacle(o)){hurt('ouch');break}}if(state!=='playing')return;
+ for(const e of enemies){const ey=enemyY(e,t);if(Math.hypot(e.x-world-PLAYER_X,ey-y)<HIT_RADIUS+e.radius){hurt('ouch');return}}
+ if(playerRule!=='fly')for(const pad of trampolines)if(pad.gravity===gravityDir&&grounded&&t-pad.usedAt>1.2&&Math.abs(pad.x-world-PLAYER_X)<26){pad.usedAt=t;route={from:pad.beat,to:pad.beat+3.1};vy=-SPRING_SPEED*gravityDir;grounded=false;jumpsUsed=1;springBoost=SPRING_BOOST;const c=jumpCues.find(c=>c.spring&&Math.abs(c.beat-pad.beat)<.02);if(c&&!c.result){c.result='bounce';stats.bounce++;addCombo();score+=JUDGE.bounce.points*multiplier()}floatText('¡Boing! Ruta secreta','#c09a48');tone(880,.18,.025);burst(pad.x,pad.y-10*gravityDir,14);break}
+ if(playerRule==='run'&&y>580||playerRule==='invert'&&y<75){hurt('fall');return}
+ for(const n of gems)if(!n.taken&&Math.abs(n.x-world-PLAYER_X)<39*1.18*speedAt(beat)&&Math.abs(n.y-y)<45){n.taken=true;notes++;if(n.bonus)bonusNotes++;burst(n.x,n.y);tone([659,784,880,987][notes%4],.08,.009)}
+ for(const c of secrets)if(!c.taken&&Math.abs(c.x-world-PLAYER_X)<34*1.18*speedAt(beat)&&Math.abs(c.y-y)<34){c.taken=true;floatText('¡Cristal secreto!','#975dba');burst(c.x,c.y,24);tone(1175,.2,.02)}
+ trail.push({x:world+PLAYER_X,y,life:.3});for(const p of trail)p.life-=dt;trail=trail.filter(p=>p.life>0);checkMisses(t);animateParticles(dt);
 }
 
-function physics(dt, t) {
-  musicTime = t;
-  const beat = beatAt(t);
-  world = distanceAt(beat); maxReachedBeat = Math.max(maxReachedBeat, beat);
-  if (!practice) {
-    const cp = CHECKPOINTS.filter(c => c <= beat).pop();
-    if (cp > checkpointBeat) { checkpointBeat = cp; takeSnapshot(); }
-  }
-  inv = Math.max(0, inv - dt); landing = Math.max(0, landing - dt); springBoost = Math.max(0, springBoost - dt);
-  for (const p of portals) { if (p.b > beat) break; if (!p.done) applyPortal(p); }
-
-  const old = y, wasGrounded = grounded;
-  if (mode === 'fly') {
-    jumpQueued = null;
-    vy = Math.max(-FLY_MAX, Math.min(FLY_MAX, vy + (held ? -FLY_UP : FLY_DOWN) * dt));
-    y += vy * dt; grounded = false;
-    if (y + RADIUS > FLOOR) { y = FLOOR - RADIUS; vy = Math.min(0, vy); }
-    if (y - RADIUS < CEIL) { y = CEIL + RADIUS; vy = Math.max(0, vy); }
-  } else {
-    tryJump(t);
-    const against = vy * grav < 0;  // subiendo contra la gravedad
-    vy += ((held || springBoost > 0) && against ? GRAVITY_HELD : GRAVITY) * grav * dt;
-    y += vy * dt; grounded = false;
-    for (const p of platforms) {
-      if (!overX(p)) continue;
-      const land = grav > 0
-        ? !p.ceil && vy >= 0 && old + RADIUS <= p.y + 2 && y + RADIUS >= p.y
-        : p.ceil && vy <= 0 && old - RADIUS >= p.y - 2 && y - RADIUS <= p.y;
-      if (land) {
-        y = p.y - RADIUS * grav; if (!wasGrounded) landing = .17;
-        vy = 0; grounded = true; lastGroundT = t; jumpsUsed = 0; break;
-      }
-    }
-    if (grounded) tryJump(t);  // un toque guardado justo antes de aterrizar salta en el mismo instante
-  }
-
-  for (const o of obstacles) { if (o.x - world > PLAYER_X + 60) break; if (hitsObstacle(o)) { hurt('ouch'); break; } }
-  if (state !== 'playing') return;
-
-  if (mode === 'run' && grav > 0) for (const pad of trampolines) {
-    if (grounded && t - pad.usedAt > 1.2 && Math.abs(pad.x - world - PLAYER_X) < 26) {
-      pad.usedAt = t; route = {from: pad.beat, to: pad.beat + 3.1}; vy = -SPRING_SPEED; grounded = false; jumpsUsed = 1; springBoost = SPRING_BOOST;
-      const c = jumpCues.find(c => c.beat === pad.beat);
-      if (c && !c.result) { c.result = 'bounce'; stats.bounce++; addCombo(); score += JUDGE.bounce.points * multiplier(); }
-      floatText('¡Boing! Ruta alta', '#c09a48', 1);
-      tone(880, .18, .025); burst(pad.x, pad.y - 10, 14);
-      break;
-    }
-  }
-  if (y > 565 || y < CEIL - 160) { hurt('fall'); return; }
-
-  for (const n of gems) if (!n.taken && Math.abs(n.x - world - PLAYER_X) < 39 && Math.abs(n.y - y) < 45) {
-    n.taken = true; notes++; if (n.bonus) bonusNotes++;
-    burst(n.x, n.y); tone([659, 784, 880, 987][notes % 4], .08, .009);
-  }
-  for (const c of crystals) if (!c.taken && Math.abs(c.x - world - PLAYER_X) < 40 && Math.abs(c.y - y) < 42) {
-    c.taken = true; if (!practice) runCrystals[c.i] = true;
-    burst(c.x, c.y, 30); tone(1318, .3, .03); tone(1760, .3, .02, (audioContext?.currentTime ?? 0) + .1);
-    floatText(practice ? 'Cristal (en práctica no se guarda)' : `¡Cristal secreto ${c.i + 1}/3!`, '#5b7fd6', 1.1);
-  }
-  trail.push({x: world + PLAYER_X, y, life: .3});
-  for (const p of trail) p.life -= dt;
-  trail = trail.filter(p => p.life > 0);
-  checkMisses(t);
-  animateParticles(dt);
-  if (practice) autoPracticePoint(beat);  // al final del paso, con el estado ya resuelto
-  if (beat >= END_BEAT) victory();
-}
 
 function updateFromMusic(now) {
   if (seekPending || song.paused) return;
@@ -513,33 +288,15 @@ function animateParticles(dt) {
   particles = particles.filter(p => p.life > 0);
 }
 function floatText(text, color, size = 1, dy = 0) {
-  floaters = floaters.filter(f => f.dy !== dy);  // un texto reemplaza al anterior en su línea
+  floaters = floaters.filter(f => f.dy !== dy);  // una calificación reemplaza a la anterior
   floaters.push({text, color, size, dy, life: .75});
-}
-
-// Intensidad de los acentos de la canción en este instante (0 a ~1)
-function accentAt(beat) {
-  let v = 0;
-  for (const [b, power] of LEVEL.accents) { const d = beat - b; if (d >= 0 && d < 1) v = Math.max(v, power * Math.exp(-d * 6)); }
-  return v;
-}
-// Paleta del tramo, con transición suave durante el primer pulso
-function hexMix(a, b, f) {
-  const pa = parseInt(a.slice(1), 16), pb = parseInt(b.slice(1), 16);
-  const ch = s => Math.round(((pa >> s) & 255) * (1 - f) + ((pb >> s) & 255) * f);
-  return `rgb(${ch(16)},${ch(8)},${ch(0)})`;
-}
-function paletteAt(beat) {
-  const s = sectionAt(beat), cur = LEVEL.sections[s], prev = LEVEL.sections[Math.max(0, s - 1)];
-  const f = Math.min(1, (beat - s * SECTION_BEATS) / 1.2);
-  return {sky: cur.sky.map((c, i) => hexMix(prev.sky[i], c, f)), aurora: cur.aurora.map((c, i) => hexMix(prev.aurora[i], c, f))};
 }
 
 // -------------------------------------------------------------------------- dibujo
 function roundRect(x, y, w, h, r, color) { ctx.fillStyle = color; ctx.beginPath(); ctx.roundRect(x, y, w, h, r); ctx.fill(); }
 
 function drawGround(left, w, top) {
-  if (left + w < -10 || left > 1290) return;
+  if (left + w < -10 || left >(viewRight+100)) return;
   const a = art.platform;
   if (!a.ready) { roundRect(left, top, w, 32, 10, '#ffecd9'); roundRect(left, top + 4, w, 5, 3, '#83cdbd'); return; }
   const P = PLATFORM, s = P.drawH / P.height, dy = top - P.drawOffset, img = a.image;
@@ -556,43 +313,22 @@ function drawGround(left, w, top) {
   const span = w - lw - rw; if (span <= 0) return;
   const n = Math.max(1, Math.round(span / mw)), dw = span / n, x0 = left + lw;
   for (let j = Math.max(0, Math.floor(-x0 / dw) - 1); j < n; j++) {
-    const x = x0 + j * dw; if (x > 1290) break;
+    const x = x0 + j * dw; if (x >(viewRight+100)) break;
     slice(P.mid[0], P.mid[1] - P.mid[0], x - .5, dw + 1);
   }
 }
-function drawCeiling(left, w) {  // el mismo suelo, reflejado
-  if (left + w < -10 || left > 1290) return;
-  ctx.save(); ctx.translate(0, 2 * CEIL); ctx.scale(1, -1); drawGround(left, w, CEIL); ctx.restore();
-}
 
 function drawFloating(p, left, beat) {
-  if (left + p.w < -10 || left > 1290) return;
+  if (left + p.w < -10 || left >(viewRight+100)) return;
   const f = SHEETS['floating-platform-sprites'][0], h = p.w * f[3] / f[2];
+  // Cuadro según el pulso: se mecen todas juntas, las de la ruta alta medio pulso desfasadas
   if (!frameOf('floating-platform-sprites', beat * 2 + (p.route ? 2 : 0), left, p.y - h * .06, p.w, h)) {
     roundRect(left, p.y, p.w, 26, 10, '#ffecd9'); roundRect(left, p.y + 4, p.w, 5, 3, '#c9a6dd');
   }
 }
 
-function drawShard(x, base, h, dir) {  // cristal colgante (dir 1 hacia abajo desde el techo)
-  const g = ctx.createLinearGradient(x - 16, base, x + 16, base + h * dir);
-  g.addColorStop(0, '#d9e4ff'); g.addColorStop(.5, '#a9b8f0'); g.addColorStop(1, '#c6a3e6');
-  ctx.fillStyle = g; ctx.beginPath();
-  ctx.moveTo(x - 17, base); ctx.lineTo(x - 6, base + h * .55 * dir); ctx.lineTo(x, base + h * dir); ctx.lineTo(x + 7, base + h * .5 * dir); ctx.lineTo(x + 17, base);
-  ctx.closePath(); ctx.fill();
-  ctx.strokeStyle = '#ffffffaa'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x - 4, base + 4 * dir); ctx.lineTo(x, base + h * .8 * dir); ctx.stroke();
-}
-function drawPillar(o, x) {
-  const top = o.ceil ? o.y : o.y - o.height, g = ctx.createLinearGradient(x - 22, 0, x + 22, 0);
-  g.addColorStop(0, '#c9d3fb'); g.addColorStop(.5, '#e8eeff'); g.addColorStop(1, '#a7b4ea');
-  ctx.fillStyle = g; ctx.beginPath(); ctx.roundRect(x - 22, top, 44, o.height, 12); ctx.fill();
-  ctx.fillStyle = '#ffffff99'; ctx.fillRect(x - 12, top + 10, 5, o.height - 20);
-  drawShard(x, o.ceil ? o.y + o.height - 2 : o.y - o.height + 2, 18, o.ceil ? 1 : -1);
-}
-
 function drawObstacle(o, x, beat) {
   const base = o.y, h = o.height, phase = beat % 1;
-  if (o.kind === 'shard') return drawShard(x, base, h, 1);
-  if (o.kind === 'pillar') return drawPillar(o, x);
   if (o.kind === 'cone') {
     // Los conos «bailan» todos juntos: se aplastan en el pulso y se estiran después
     const index = [1, 2, 3, 0][Math.floor(phase * 4)];
@@ -638,71 +374,46 @@ function drawTrampoline(pad, x, beat) {
   ctx.textAlign = 'start';
 }
 
-function drawRing(r, x, beat, pulse) {
-  ctx.save(); ctx.translate(x, r.y);
-  const s = r.used ? 1 + Math.min(1, (musicTime - timeAt(r.b)) * 3) : 1 + pulse * .12;
-  ctx.globalAlpha = r.used ? Math.max(0, 1 - (musicTime - timeAt(r.b)) * 3) : r.secret ? .55 + .2 * Math.sin(beat * Math.PI) : 1;
-  ctx.scale(s, s);
-  ctx.lineWidth = 7; ctx.strokeStyle = r.secret ? '#c9a6dd' : '#f2c46b'; ctx.beginPath(); ctx.arc(0, 0, 26, 0, 7); ctx.stroke();
-  ctx.lineWidth = 3; ctx.strokeStyle = '#fff8e6'; ctx.beginPath(); ctx.arc(0, 0, 26, 0, 7); ctx.stroke();
-  ctx.fillStyle = r.secret ? '#c9a6dd55' : '#ffe9b055'; ctx.beginPath(); ctx.arc(0, 0, 20, 0, 7); ctx.fill();
-  ctx.restore(); ctx.globalAlpha = 1;
-}
-
-function drawPortal(p, x, pulse) {
-  const style = {speed: ['#7fd0bd', '»'], flip: ['#b08ac6', '⇅'], unflip: ['#b08ac6', '⇅'], fly: ['#8fb4f0', '≋'], land: ['#e9a77f', '▁']}[p.kind];
-  ctx.save(); ctx.translate(x, MID_Y + 20);
-  ctx.globalAlpha = .9;
-  ctx.strokeStyle = '#fff6e0'; ctx.lineWidth = 14; ctx.beginPath(); ctx.ellipse(0, 0, 30 + pulse * 2, 120 + pulse * 3, 0, 0, 7); ctx.stroke();
-  ctx.strokeStyle = style[0]; ctx.lineWidth = 7; ctx.stroke();
-  ctx.fillStyle = style[0] + '40'; ctx.fill();
-  ctx.fillStyle = '#5f4470'; ctx.font = 'bold 30px Trebuchet MS'; ctx.textAlign = 'center'; ctx.fillText(style[1], 0, 10);
-  ctx.restore();
-}
-
-function drawCrystal(c, x, beat) {
-  const found = best.crystals[c.i];
-  ctx.save(); ctx.translate(x, c.y + Math.sin(beat * Math.PI) * 4); ctx.rotate(Math.sin(beat * Math.PI * .5) * .15);
-  ctx.globalAlpha = found ? .45 : 1;
-  ctx.shadowColor = '#bcd0ff'; ctx.shadowBlur = 16;
-  const g = ctx.createLinearGradient(-14, -20, 14, 20); g.addColorStop(0, '#e9f0ff'); g.addColorStop(.5, '#8fa8f0'); g.addColorStop(1, '#b98ee0');
-  ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(0, -22); ctx.lineTo(15, -4); ctx.lineTo(0, 22); ctx.lineTo(-15, -4); ctx.closePath(); ctx.fill();
-  ctx.shadowBlur = 0; ctx.strokeStyle = '#ffffffcc'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(-15, -4); ctx.lineTo(15, -4); ctx.moveTo(0, -22); ctx.lineTo(-5, -4); ctx.lineTo(0, 22); ctx.stroke();
-  ctx.restore(); ctx.globalAlpha = 1;
-}
-
-function drawAurora(beat, colors) {
+function drawAurora(beat) {
   if (combo < 6) return;
-  const strength = Math.min(.2, .06 + combo * .003);
+  const strength = Math.min(.2, .06 + combo * .003), colors = ['#72cdb7', '#bb9bd5', '#edb4cb'];
   for (let band = 0; band < 3; band++) {
     ctx.globalAlpha = strength; ctx.fillStyle = colors[band]; ctx.beginPath();
-    for (let x = 0; x <= 1280; x += 32) { const yy = 110 + band * 35 + Math.sin(x * .005 + beat * .12 + band) * 25; x ? ctx.lineTo(x, yy) : ctx.moveTo(x, yy); }
-    for (let x = 1280; x >= 0; x -= 32) ctx.lineTo(x, 170 + band * 35 + Math.sin(x * .005 + beat * .12 + band) * 25);
+    for (let x = 0; x <= viewRight+32; x += 32) { const yy = 110 + band * 35 + Math.sin(x * .005 + beat * .12 + band) * 25; x ? ctx.lineTo(x, yy) : ctx.moveTo(x, yy); }
+    for (let x = Math.ceil(viewRight/32)*32; x >= 0; x -= 32) ctx.lineTo(x, 170 + band * 35 + Math.sin(x * .005 + beat * .12 + band) * 25);
     ctx.closePath(); ctx.fill();
   }
   ctx.globalAlpha = 1;
 }
 
-function drawGlider() {  // nube-planeador del modo vuelo
-  ctx.fillStyle = '#ffffffee';
-  ctx.beginPath(); ctx.ellipse(-6, 34, 40, 11, 0, 0, 7); ctx.ellipse(-26, 30, 18, 12, 0, 0, 7); ctx.ellipse(12, 28, 20, 13, 0, 0, 7); ctx.fill();
-  ctx.fillStyle = '#c9b4e8'; ctx.beginPath(); ctx.ellipse(-6, 40, 34, 4, 0, 0, 7); ctx.fill();
-}
+function blendHex(a,b,f){const out=[1,3,5].map(i=>Math.round(parseInt(a.slice(i,i+2),16)*(1-f)+parseInt(b.slice(i,i+2),16)*f).toString(16).padStart(2,'0'));return '#'+out.join('')}
+function paletteAt(beat){const i=sectionAt(beat),current=LEVEL.sections[i];if(i===0)return current.palette;const f=Math.max(0,Math.min(1,(beat-current.startBeat)/2));return current.palette.map((c,k)=>blendHex(LEVEL.sections[i-1].palette[k],c,f))}
+function drawLevelPlatform(p,beat){if(p.x-world>(viewRight+100)||p.x+p.w-world<0)return;ctx.save();if(p.gravity===-1){ctx.translate(0,p.y*2);ctx.scale(1,-1)}if(p.floating)drawFloating(p,p.x-world,beat);else drawGround(p.x-world,p.w,p.y);ctx.globalAlpha=.30;roundRect(p.x-world,p.y+2,p.w,5,2,LEVEL.sections[sectionAt(beat)].groundTint);ctx.restore()}
+function drawInteractive(beat){for(const r of rings){const x=r.x-world;if(x<-90||x>(viewRight+100))continue;ctx.save();ctx.translate(x,r.y);ctx.globalAlpha=r.used?.25:1;ctx.strokeStyle='#edbf6c';ctx.lineWidth=7;ctx.beginPath();ctx.arc(0,0,29+Math.sin(beat*Math.PI*2)*2,0,7);ctx.stroke();ctx.strokeStyle='#fff3c4';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='#8c609e';ctx.font='bold 19px Trebuchet MS';ctx.textAlign='center';ctx.fillText(r.used?'✓':'TOCA',0,7);ctx.restore()}
+ for(const p of portals){const x=p.x-world;if(x<-100||x>(viewRight+100))continue;ctx.save();ctx.translate(x,310);ctx.strokeStyle=p.kind==='speed'?'#ed9b79':p.kind==='reset'?'#82c8b5':p.rule==='fly'?'#8bbad5':p.rule==='invert'?'#b59ad6':'#e7b875';ctx.lineWidth=12;ctx.beginPath();ctx.ellipse(0,0,45,145,0,0,7);ctx.stroke();ctx.fillStyle='#fff7';ctx.font='bold 16px Trebuchet MS';ctx.textAlign='center';ctx.fillText(p.kind==='speed'?'×2':p.kind==='reset'?'×1':p.rule==='fly'?'VUELO':p.rule==='invert'?'GRAVEDAD':'SALTO',0,-163);ctx.restore()}
+ for(const c of secrets)if(!c.taken){const x=c.x-world;if(x<-60||x>(viewRight+100))continue;ctx.save();ctx.translate(x,c.y+Math.sin(beat*Math.PI*2)*3);ctx.rotate(Math.PI/4);ctx.shadowColor='#ba8fd8';ctx.shadowBlur=18;roundRect(-13,-13,26,26,5,'#bd8dda');ctx.shadowBlur=0;ctx.strokeStyle='#fff2ff';ctx.lineWidth=2;ctx.strokeRect(-9,-9,18,18);ctx.restore()}}
+// Final cinematográfico: luces decorativas; la física del camino permanece en su superficie habitual.
+function finaleDuration(tier=finaleTier){return tier===3?4.6:tier===2?3.9:3.2}
+function finalePose(t,tier){const duration=finaleDuration(tier),entry=Math.max(0,Math.min(1,(t-duration+.8)/.8)),ease=entry*entry*(3-2*entry);const bounce=reducedMotion?0:Math.abs(Math.sin(t*(tier===3?4.5:tier===2?5:3.8)))*(tier===3?125:tier===2?80:42);const spin=reducedMotion?0:tier===3?Math.min(1,t/1.6)*Math.PI*4:tier===2?Math.min(1,t/1.15)*Math.PI*2:Math.sin(t*3)*.12;return {rise:-bounce*(1-ease)-63*ease,turn:spin*(1-ease),scale:1-.72*ease,alpha:1-.40*ease}}
+function drawFinalBridge(beat){if(beat<END_BEAT-16)return;const reveal=Math.min(1,(beat-(END_BEAT-16))/16),fraction=gems.length?notes/gems.length:0,from=at(END_BEAT-8),to=at(END_BEAT),step=(to-from)/16;for(let i=0;i<16;i++){const x=from+i*step-world;if(x+step<0||x>(viewRight+100)||i/16>reveal)continue;const charged=i<Math.round(fraction*16);ctx.save();ctx.globalAlpha=charged?.82:.24;const color=charged?fraction>=.85?'#f2d48b':'#9addc8':'#c5b6d0';ctx.shadowColor=color;ctx.shadowBlur=charged&&!reducedMotion?10:0;roundRect(x+5,FLOOR+5,step-10,7,4,color);ctx.shadowBlur=0;ctx.fillStyle=charged?'#9c7b45':'#988b9f';ctx.font='bold 19px Georgia';ctx.textAlign='center';ctx.fillText(charged?'♪':'◇',x+step/2,FLOOR+40);ctx.restore()}}
+function drawAwakeningPortal(beat,t){const x=at(END_BEAT)-world;if(x>(viewRight+100))return;const wake=Math.max(0,Math.min(1,(beat-(END_BEAT-16))/16)),pulse=Math.exp(-(beat%1)*8);ctx.save();ctx.translate(x,385);if(wake>0){ctx.fillStyle='rgba(255,224,158,'+(wake*.09)+')';ctx.beginPath();ctx.ellipse(0,0,96+wake*35,150+wake*20,0,0,7);ctx.fill();ctx.strokeStyle='rgba(216,185,232,'+(wake*.4)+')';ctx.lineWidth=3;ctx.setLineDash([9,14]);ctx.beginPath();ctx.ellipse(0,0,85,125,reducedMotion?0:t*.08,0,7);ctx.stroke();ctx.setLineDash([])}ctx.shadowColor=wake>.7?'#ffe2a0':'#bda0d6';ctx.shadowBlur=reducedMotion?0:12+wake*22;ctx.strokeStyle=wake>.7?'#f5d88d':'#ead7ef';ctx.lineWidth=18;ctx.beginPath();ctx.ellipse(0,0,64+pulse*2,98+pulse*2,0,0,7);ctx.stroke();ctx.shadowBlur=0;ctx.strokeStyle='#b08ac6';ctx.lineWidth=6;ctx.stroke();ctx.fillStyle='rgba(211,178,225,'+(.18+wake*.20)+')';ctx.fill();for(let i=0;i<12;i++){const a=i*Math.PI/6+(reducedMotion?0:t*.18),r=80+wake*12;ctx.globalAlpha=.3+wake*.7;ctx.fillStyle=i%2?'#fff2c1':'#d4b8e5';ctx.beginPath();ctx.arc(Math.cos(a)*r,Math.sin(a)*r*1.35,2+wake,0,7);ctx.fill()}ctx.globalAlpha=1;ctx.fillStyle='#785284';ctx.font='bold 18px Trebuchet MS';ctx.textAlign='center';ctx.fillText(wake>.9?'TU MELODÍA ABRIÓ EL PORTAL':'PORTAL',0,147);ctx.restore()}
+function drawFinaleBanner(){if(state!=='celebrating')return;const alpha=Math.min(1,celebrate/.4);ctx.save();ctx.globalAlpha=alpha;ctx.textAlign='center';ctx.fillStyle=finaleTier===3?'#967443':'#73577e';ctx.font='bold 30px Trebuchet MS';const title=mode==='practice'?'¡Tu práctica abrió el portal!':finaleTier===3?'¡El cielo entero celebra contigo!':finaleTier===2?'¡Tu melodía iluminó el cielo!':'¡Abriste el portal!';ctx.font='bold 22px Trebuchet MS';ctx.fillText(finaleTier===3?'¡El cielo celebra contigo!':'¡Abriste el portal!',420,245);if(mode==='normal'){const visible=Math.min(finaleTier,Math.floor(celebrate/.45)+1);ctx.font='52px Trebuchet MS';ctx.fillStyle='#bf9751';ctx.fillText('★'.repeat(visible)+'☆'.repeat(3-visible),420,311)}ctx.font='17px Trebuchet MS';ctx.fillStyle='#896d7d';ctx.fillText(notes+' notas iluminaron el camino',420,346);ctx.restore()}
+function updateFinale(dt){celebrate+=dt;cameraKick=Math.max(0,cameraKick-dt);flash=Math.max(0,flash-dt);animateParticles(dt);const count=mode==='practice'?0:Math.min(finaleTier,Math.floor(celebrate/.45)+1);while(finalePops<count){finalePops++;tone([659,784,988][finalePops-1],.2,.025);if(finaleTier===3&&!reducedMotion)burst(world+PLAYER_X+180+finalePops*140,100+finalePops%2*55,22,true)}song.volume=.65*Math.max(0,Math.min(1,(finaleDuration()-celebrate)/1.2));if(celebrate>=finaleDuration())finish(true)}
 
+function enemyY(e,t){return e.y+Math.sin((t-timeAt(e.beat))*Math.PI*2/BEAT)*e.amplitude}
+function drawEnemies(t){for(const e of enemies){const x=e.x-world;if(x< -70||x>(viewRight+100))continue;const yy=enemyY(e,musicTime);ctx.save();ctx.translate(x,yy);const flap=Math.sin(t*16+e.beat)*.6;ctx.fillStyle=e.color;for(const side of [-1,1]){ctx.save();ctx.scale(side,1);ctx.rotate(flap);ctx.beginPath();ctx.ellipse(27,-4,25,12,-.45,0,7);ctx.fill();ctx.restore()}ctx.fillStyle='#665477';ctx.beginPath();ctx.ellipse(0,0,e.radius+4,e.radius+1,0,0,7);ctx.fill();ctx.fillStyle=e.color;ctx.beginPath();ctx.ellipse(0,2,e.radius-2,e.radius-2,0,0,7);ctx.fill();ctx.fillStyle='#49374f';for(const side of [-1,1]){ctx.beginPath();ctx.ellipse(side*7,-1,3,5,0,0,7);ctx.fill()}ctx.strokeStyle='#49374f';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,7,5,Math.PI,Math.PI*2);ctx.stroke();ctx.restore()}}
+let viewW=1280,viewH=720,viewScale=1,viewTop=96,viewLeft=205,viewRight=1235;
+function resizeGame(){const box=canvas.getBoundingClientRect?.();const ratio=box?.width&&box?.height?box.width/box.height:16/9;viewH=720;viewW=720*ratio;canvas.width=Math.round(viewW);canvas.height=viewH;viewScale=1;viewTop=96;viewLeft=Math.min(300,viewW*.16);viewRight=viewW-viewLeft+PLAYER_X;if(ratio<1&&state==='playing')pause()}
+window.addEventListener('resize',resizeGame);resizeGame();
+async function mobileFullscreen(){try{await document.documentElement?.requestFullscreen?.();await screen.orientation?.lock?.('landscape')}catch{}resizeGame()}
 function draw(t) {
-  const beat = beatAt(musicTime), pulse = Math.exp(-(beat % 1) * 8), pal = paletteAt(beat);
-  const hit = state === 'playing' ? accentAt(beat) : 0;
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.clearRect(0, 0, 1280, 720);
+  const beat = beatAt(musicTime), pulse = Math.exp(-(beat % 1) * 8);
+  ctx.clearRect(0,0,viewW,viewH);ctx.save();
   const bg = ctx.createLinearGradient(0, 0, 0, 720);
-  bg.addColorStop(0, pal.sky[0]); bg.addColorStop(.55, pal.sky[1]); bg.addColorStop(1, pal.sky[2]);
-  ctx.fillStyle = bg; ctx.fillRect(0, 0, 1280, 720);
-  // Golpe de cámara en los acentos fuertes de la canción
-  const zoom = 1 + hit * .018, shake = hit > .6 ? (Math.random() - .5) * 6 * hit : 0;
-  ctx.setTransform(zoom, 0, 0, zoom, 640 * (1 - zoom) + shake, 360 * (1 - zoom) + shake);
-
-  drawAurora(beat, pal.aurora);
-  ctx.fillStyle = '#fff0c4'; ctx.beginPath(); ctx.arc(1090, 135, 57 + pulse * 3, 0, Math.PI * 2); ctx.fill();
+  const palette=paletteAt(beat);bg.addColorStop(0,palette[0]);bg.addColorStop(.55,palette[1]);bg.addColorStop(1,palette[2]);
+  ctx.fillStyle=bg;ctx.fillRect(0,0,viewW,viewH);ctx.translate(viewLeft-PLAYER_X*viewScale,viewTop);ctx.scale(viewScale,viewScale);ctx.fillStyle=palette[2];ctx.fillRect(-600,FLOOR,viewRight+800,2000);ctx.save();if(!reducedMotion&&cameraKick>0)ctx.translate(Math.sin(t*57)*cameraKick*8,Math.cos(t*43)*cameraKick*5);
+  drawAurora(beat);
+  ctx.fillStyle = '#fff0c4'; ctx.beginPath(); ctx.arc(650, 135, 57, 0, Math.PI * 2); ctx.fill();
   ctx.fillStyle = '#fff5';
   for (let i = 0; i < 4; i++) {
     const x = ((i * 410 - world * .04) % 1700 + 1700) % 1700 - 160, cy = 145 + (i % 2) * 30;
@@ -710,27 +421,13 @@ function draw(t) {
   }
   ctx.fillStyle = '#fff4'; ctx.beginPath(); ctx.ellipse(200, 700, 350, 65, 0, 0, 7); ctx.ellipse(960, 720, 460, 80, 0, 0, 7); ctx.fill();
 
-  // Líneas de velocidad tras un portal »
-  for (const p of portals) if (p.kind === 'speed' && beat >= p.b && beat < p.b + 2) {
-    ctx.globalAlpha = .35 * (1 - (beat - p.b) / 2); ctx.fillStyle = '#ffffff';
-    for (let i = 0; i < 14; i++) { const ly = 60 + ((i * 97) % 600), lx = ((i * 211 - animTime * 2400) % 1500 + 1500) % 1500 - 100; ctx.fillRect(lx, ly, 120, 3); }
-    ctx.globalAlpha = 1;
-  }
+  for(const p of platforms)drawLevelPlatform(p,beat);
 
-  for (const p of platforms) if (!p.floating && !p.ceil) drawGround(p.x - world, p.w, p.y);
-  for (const p of platforms) if (p.ceil) drawCeiling(p.x - world, p.w);
-  for (const p of platforms) if (p.floating) drawFloating(p, p.x - world, beat);
-  if (practice) for (const cp of practicePoints) {
-    const x = at(cp.beat) - world; if (x < -20 || x > 1300) continue;
-    ctx.fillStyle = '#5fbf9f'; ctx.save(); ctx.translate(x, cp.y); ctx.rotate(Math.PI / 4); ctx.fillRect(-8, -8, 16, 16); ctx.restore();
-  }
-
-  // Señales: ↑ salto, ↑↑ doble salto, ◎ anillo, ↟ trampolín. Se colorean según cómo las jugaste.
+  // Señales: ↑ salto, ↑↑ doble salto (en el aire), ↟ trampolín. Se colorean según cómo las jugaste.
   ctx.textAlign = 'center'; ctx.font = 'bold 20px Trebuchet MS';
   for (const c of jumpCues) {
-    const x = c.x - world; if (x < PLAYER_X - 60 || x > 1300) continue;
-    if (c.ring) continue;  // el anillo es su propia señal
-    const cy = c.air ? (c.ceil ? CEIL + 160 : FLOOR - 160) : c.ceil ? CEIL - 18 : FLOOR + 18;
+    const x = c.x - world; if (x < PLAYER_X - 60 || x >(viewRight+100)) continue;
+    const dir=ruleAt(c.time)==='invert'?-1:1,base=dir===-1?CEILING:FLOOR;const cy=c.air?base-dir*160:base+dir*18;
     if (c.result === 'skip') continue;
     if (c.result) {
       ctx.globalAlpha = Math.max(0, 1 - (PLAYER_X - x) / 60);
@@ -742,37 +439,27 @@ function draw(t) {
     ctx.strokeStyle = c.spring ? '#c09a48' : c.double ? '#ae7aba' : '#519f98'; ctx.lineWidth = 3;
     ctx.beginPath(); ctx.arc(x, cy, 11 + pulse * 3, 0, 7); ctx.stroke();
     ctx.fillStyle = c.spring ? '#a07a2c' : c.double ? '#92639e' : '#478b86';
-    ctx.fillText(c.spring ? '↟' : c.double ? '↑↑' : c.ceil ? '↓' : '↑', x, cy + 7);
+    ctx.fillText(c.spring ? '↟' : c.double ? '↑↑' : '↑', x, cy + 7);
   }
   ctx.globalAlpha = 1; ctx.textAlign = 'start';
 
-  for (const p of portals) { const x = p.x - world; if (x > -60 && x < 1340) drawPortal(p, x, pulse); }
-  for (const o of obstacles) { const x = o.x - world; if (x > -60 && x < 1340) drawObstacle(o, x, beat); }
-  for (const pad of trampolines) { const x = pad.x - world; if (x > -80 && x < 1360) drawTrampoline(pad, x, beat); }
-  for (const r of rings) { const x = r.x - world; if (x > -60 && x < 1340) drawRing(r, x, beat, pulse); }
+  for (const o of obstacles) { const x=o.x-world;if(x>-160&&x<(viewRight+100)){ctx.save();if(o.gravity===-1){ctx.translate(0,o.y*2);ctx.scale(1,-1)}drawObstacle(o,x,beat);ctx.restore()}}
+  for (const pad of trampolines){const x=pad.x-world;if(x>-80&&x<(viewRight+100)){ctx.save();if(pad.gravity===-1){ctx.translate(0,pad.y*2);ctx.scale(1,-1)}drawTrampoline(pad,x,beat);ctx.restore()}}drawInteractive(beat);
   for (const n of gems) if (!n.taken) {
-    const x = n.x - world; if (x < -40 || x > 1320) continue;
+    const x = n.x - world; if (x < -40 || x >(viewRight+100)) continue;
     ctx.shadowColor = '#fff3bc'; ctx.shadowBlur = 9; ctx.fillStyle = n.bonus ? '#8a559d' : '#b98726'; ctx.font = 'bold 38px Georgia';
-    ctx.fillText('♪', x - 12, n.y + 13 + Math.sin(beat * Math.PI * 2) * 2); ctx.shadowBlur = 0;
+    ctx.fillText('♪', x - 12, n.y + 5 + Math.sin(beat * Math.PI * 2) * 2); ctx.shadowBlur = 0;
   }
-  for (const c of crystals) if (!c.taken) { const x = c.x - world; if (x > -40 && x < 1320) drawCrystal(c, x, beat); }
 
-  const portalX = PLAYER_X + distanceAt(END_BEAT) - world;
-  if (portalX < 1400) {
-    ctx.save(); ctx.translate(portalX, 385);
-    ctx.strokeStyle = '#fff2c4'; ctx.lineWidth = 18; ctx.beginPath(); ctx.ellipse(0, 0, 64 + pulse * 2, 98 + pulse * 2, 0, 0, 7); ctx.stroke();
-    ctx.strokeStyle = '#b08ac6'; ctx.lineWidth = 8; ctx.stroke(); ctx.fillStyle = '#d4b1df50'; ctx.fill();
-    ctx.fillStyle = '#785284'; ctx.font = 'bold 19px Trebuchet MS'; ctx.textAlign = 'center'; ctx.fillText('PORTAL', 0, 137);
-    ctx.restore();
-  }
+  drawFinalBridge(beat);drawAwakeningPortal(beat,t);
 
   for (const p of particles) {
     ctx.globalAlpha = Math.max(0, Math.min(1, p.life)); ctx.fillStyle = p.color;
-    if (p.confetti) { ctx.save(); ctx.translate(p.x - world, p.y); ctx.rotate(t * 3 + p.x); ctx.fillRect(-p.r, -p.r, p.r * 2, p.r); ctx.restore(); }
+    if (p.confetti) { ctx.save(); ctx.translate(p.x - world, p.y); ctx.rotate(t*3+p.x);if(state==='celebrating'&&finaleTier>=2){ctx.font=(finaleTier===3?'17px':'20px')+' Georgia';ctx.fillText(finaleTier===3?'✦':'♪',-p.r,p.r)}else ctx.fillRect(-p.r,-p.r,p.r*2,p.r);ctx.restore(); }
     else { ctx.beginPath(); ctx.arc(p.x - world, p.y, p.r, 0, 7); ctx.fill(); }
   }
-  // Estela musical (toma el color del cubo)
-  ctx.fillStyle = skin().trail;
+  // Estela musical
+  ctx.fillStyle = '#78c8b5';
   for (let i = 0; i < trail.length; i += 3) {
     const p = trail[i]; ctx.globalAlpha = p.life / .3 * .23;
     ctx.beginPath(); ctx.arc(p.x - world, p.y, 8 + p.life * 24, 0, 7); ctx.fill();
@@ -781,69 +468,53 @@ function draw(t) {
 
   // Personaje
   const win = state === 'celebrating' || (state === 'end' && winning);
-  const bounce = win ? -Math.abs(Math.sin(celebrate * 5)) * 65 : 0;
+  const pose=win?finalePose(celebrate,finaleTier):{rise:0,turn:0,scale:1,alpha:1};const bounce=win?pose.rise:0;
   ctx.save();
+  ctx.filter=(SKINS.find(s=>s.id===selectedSkin)||SKINS[0]).filter;if(playerRule==='fly'){ctx.fillStyle='#fff9';ctx.beginPath();ctx.ellipse(PLAYER_X-42,y+8,22,9,-.4,0,7);ctx.ellipse(PLAYER_X+42,y+8,22,9,.4,0,7);ctx.fill()}
   ctx.translate(PLAYER_X + (state === 'hurt' && reactionKind === 'ouch' ? Math.sin(t * 65) * 7 : 0), y + bounce);
-  if (mode === 'fly' && !win) { ctx.rotate(Math.max(-.35, Math.min(.35, vy * .0009))); drawGlider(); }
-  else ctx.rotate(win ? Math.min(1, celebrate / 1.1) * Math.PI * 2 : grounded ? Math.sin(beat * Math.PI * 2) * .025 : Math.max(-.22, Math.min(.22, vy * grav * .0004)));
-  if (grav < 0 && !win) ctx.scale(1, -1);
-  const squash = landing > 0 ? 1 + landing * .6 : 1; ctx.scale(squash, 1 / squash);
-  ctx.globalAlpha = inv > 0 ? .6 + .4 * Math.sin(t * 24) : 1;
-  ctx.filter = skinFilter();
-  const falling = mode === 'run' && !grounded && vy * grav > 100 && distToSurface() === Infinity;
+  ctx.rotate(win ? pose.turn : grounded ? Math.sin(beat * Math.PI * 2) * .025 : Math.max(-.22, vy * .0004));
+  if(gravityDir===-1)ctx.scale(1,-1);
+  const squash=landing>0?1+landing*.6:1;ctx.scale(squash*pose.scale,pose.scale/squash);
+  ctx.globalAlpha=(inv>0?.6+.4*Math.sin(t*24):1)*pose.alpha;
+  const falling = !grounded && vy > 100 && platformBelow() === Infinity;
   if (win) face(2);
   else if (state === 'hurt') face(reactionKind === 'fall' ? 0 : 1);
   else if (falling) face(0);
+  else if(selectedFace==='smile')face(2);
   else if (!sprite('character', -37, -37, 74, 74)) {
     ctx.fillStyle = '#80cfbb'; ctx.beginPath(); ctx.moveTo(0, -32); ctx.lineTo(32, 0); ctx.lineTo(0, 32); ctx.lineTo(-32, 0); ctx.fill();
   }
-  ctx.filter = 'none';
-  ctx.restore();
+  ctx.restore();if(collection.length===3){ctx.fillStyle='#fff2b8';ctx.beginPath();ctx.arc(PLAYER_X+Math.sin(beat*2)*44,y+Math.cos(beat*2)*44,3,0,7);ctx.fill()}
 
   ctx.textAlign = 'center';
-  if (state === 'hurt') { ctx.fillStyle = '#674259'; ctx.font = 'bold 23px Trebuchet MS'; ctx.fillText(reactionKind === 'fall' ? '¡Oooh!' : '¡Auch!', PLAYER_X, y - 62 * grav); }
+  if (state === 'hurt') { ctx.fillStyle = '#674259'; ctx.font = 'bold 23px Trebuchet MS'; ctx.fillText(reactionKind === 'fall' ? '¡Oooh!' : '¡Auch!', PLAYER_X, y - 62); }
   // Calificación flotante: sigue al personaje, sin taparlo
-  const textY = grav > 0 ? Math.min(352, y - 70) : Math.max(330, y + 90);
+  const textY = Math.min(352, y - 70);
   for (const f of floaters) {
     const rise = (1 - f.life / .75) * 26, pop = 1 + Math.max(0, f.life - .6) * 2;
     ctx.globalAlpha = Math.min(1, f.life / .3);
     ctx.font = `900 ${Math.round(26 * f.size * pop)}px Trebuchet MS`;
-    ctx.lineWidth = 6; ctx.strokeStyle = '#fff8f0'; ctx.strokeText(f.text, PLAYER_X + 40, textY - rise + f.dy);
-    ctx.fillStyle = f.color; ctx.fillText(f.text, PLAYER_X + 40, textY - rise + f.dy);
+    ctx.lineWidth = 6; ctx.strokeStyle = '#fff8f0'; ctx.strokeText(f.text, PLAYER_X+100, textY - rise + f.dy);
+    ctx.fillStyle = f.color; ctx.fillText(f.text, PLAYER_X+100, textY - rise + f.dy);
   }
-  ctx.globalAlpha = 1; ctx.textAlign = 'start';
-  // Destello en los golpes fuertes
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
-  if (hit > .05) { ctx.globalAlpha = hit * .14; ctx.fillStyle = '#fffaf0'; ctx.fillRect(0, 0, 1280, 720); ctx.globalAlpha = 1; }
+  drawEnemies(t);drawFinaleBanner();ctx.globalAlpha=1;ctx.textAlign='start';ctx.restore();if(!reducedMotion&&flash>0){ctx.fillStyle='rgba(255,246,220,'+Math.min(.16,flash)+')';ctx.fillRect(-600,-1000,viewRight+800,3000)}ctx.restore();
 }
 
 // ------------------------------------------------------------------------ interfaz
 function formatScore(n) { return n.toLocaleString('es-CL'); }
 const starText = n => '★'.repeat(n) + '☆'.repeat(3 - n);
-const crystalText = arr => arr.map(f => f ? '◆' : '◇').join('');
 function updateHUD() {
   const b = beatAt(musicTime);
-  $('hearts').textContent = practice ? '∞ Práctica' : '♥'.repeat(Math.max(0, lives)) + '♡'.repeat(3 - Math.max(0, lives));
+  $('hearts').textContent=mode==='practice'?'PRÁCTICA':'NORMAL';$('attempt').textContent='Intento '+attempt;$('percent').textContent=progressPercent()+' %';$('checkpointBtn').style.display=mode==='practice'?'block':'none';$('deleteCheckpoint').style.display=mode==='practice'?'block':'none';$('checkpointBtn').textContent='＋ '+personalCheckpoints.length;$('modeHint').textContent=mode==='practice'?'Sin estrellas · C: checkpoint · Z: quitar':'Anterior '+lastAttemptProgress+' % · Mejor '+best.progress+' %';
   $('notes').textContent = `♪ ${notes} / ${gems.length}`;
   $('score').textContent = `★ ${formatScore(score)}`;
-  $('attempt').textContent = `Intento ${attempts}`;
-  $('combo').textContent = combo > 1 ? `×${multiplier()} · ${combo}` : mode === 'fly' ? '≋ vuelo' : `↑ ${2 - jumpsUsed}/2`;
-  $('bar').style.width = Math.min(100, b / END_BEAT * 100) + '%';
+  $('combo').textContent = speedAt(b)===2?'⚡ ×2':'↑ '+(2-jumpsUsed)+'/2';
+  $('bar').style.width = Math.min(100,musicTime/songEndTime()*100)+'%';
   const pulse = Math.exp(-(b % 1) * 9);
   $('pulse').style.transform = `scale(${1 + pulse * .18})`;
   $('pulse').style.background = `rgba(128,203,187,${.45 + pulse * .5})`;
   if (state === 'playing') {
-    const s = sectionAt(b);
-    let label = b < 4 ? `Intento ${attempts} · Prepárate… ${4 - Math.floor(b)}` : `${s + 1} / 4 · ${LEVEL.sections[s].name}`;
-    if (practice && b < 4) label = 'Práctica · «◆ Punto» (o C) guarda tu posición';
-    else if (b >= 4 && b < 8) label = 'Salta justo cuando la señal ↑ llegue a ti';
-    if (b >= 17 && b < 20) label = 'No saltes en ↟: pisa el trampolín y sube a la ruta alta';
-    if (b >= 22 && b < 24) label = 'Hueco largo: ↑ en el pulso y ↑↑ medio pulso después';
-    if (b >= 28 && b < 30.5) label = 'Anillo ◎: toca justo cuando pases por él';
-    if (b >= 46 && b < 48) label = 'Portal ≋: mantén para subir, suelta para bajar';
-    if (b >= 48 && b < 50) label = 'Sigue las notas en el aire';
-    if (b >= 74 && b < 76.5) label = 'Portal ⇅: vas a correr por el techo';
-    if (b >= 76.5 && b < 78) label = 'En el techo, ↓ salta hacia abajo';
+    const label=b<4?'Toca para saltar':b<8?'Otro toque: doble salto':playerRule==='fly'?'Mantén para volar':playerRule==='invert'?'Salta hacia abajo':'';
     $('beatHint').textContent = errorText || label;
   }
 }
@@ -855,13 +526,12 @@ function showCard(which) {
 }
 function hideOverlay() { $('overlay').style.display = 'none'; }
 function renderBest() {
-  $('best').textContent = best.stars ? `MEJOR: ${starText(best.stars)} · ★ ${formatScore(best.score)} · ${crystalText(best.crystals)}`
-    : best.progress ? `MEJOR AVANCE: ${best.progress} % · ${crystalText(best.crystals)}` : 'EXPLORA LAS RUTAS ALTAS';
-  renderSkins();
+  $('best').textContent = best.stars ? `MEJOR: ${starText(best.stars)} · ★ ${formatScore(best.score)}`
+    : best.progress ? `MEJOR AVANCE: ${best.progress} %` : 'EXPLORA LAS RUTAS ALTAS';
 }
 
 async function playMusic() {
-  try { await song.play(); syncClock(); errorText = ''; return true; }
+  try { if(song.ended&&state==='playing'){completeSong();return true}await song.play();syncClock();errorText='';return true; }
   catch { showError('Toca Continuar para activar la música.'); state = 'paused'; showPause(); return false; }
 }
 function waitForSong(timeout = 8000) {
@@ -873,32 +543,11 @@ function waitForSong(timeout = 8000) {
   });
 }
 
-function resetPlayerAt(b, py = FLOOR - RADIUS, g = 1, m = 'run') {
-  musicTime = timeAt(b); world = distanceAt(b);
-  y = py; vy = 0; grav = g; mode = m; grounded = m === 'run'; lastGroundT = musicTime;
-  held = false; jumpQueued = null; jumpsUsed = 0; springBoost = 0; route = null; trail = [];
-  for (const p of portals) p.done = p.b <= b;
-  for (const r of rings) if (r.b >= b) r.used = false;
-  for (const c of jumpCues) if (c.beat >= b) { c.result = null; c.offset = undefined; }
-  for (const pad of trampolines) pad.usedAt = -10;
-}
+function clearAttempt(){finaleTier=0;finalePops=0;lives=3;notes=0;bonusNotes=0;held=false;score=0;combo=0;stats=newStats();particles=[];floaters=[];trail=[];jumpQueued=null;lastGroundT=0;jumpsUsed=0;maxReachedBeat=0;route=null;inv=0;landing=0;reaction=0;celebrate=0;springBoost=0;reactionKind='';winning=false;musicTime=0;world=0;setRule('run',true);makeLevel();resetPortals(0)}
+async function reset(){if(state==='loading')return;song.pause();state='loading';attempt++;save('vectorbeat.attempts4.'+mode,attempt);personalCheckpoints=[];checkpoint=null;clearAttempt();$('menu').style.display='none';hideOverlay();$('hud').style.display='flex';$('beatHint').style.display='block';$('mascot').style.display='none';$('pause').textContent='Ⅱ';song.volume=.65;song.muted=!sound;seekPending=false;if(song.readyState<3){$('beatHint').textContent='Cargando música…';await waitForSong()}if(state!=='loading')return;song.currentTime=0;syncClock();state='playing';updateHUD();await playMusic()}
+function manualRetry(){if(state!=='playing')return;lastAttemptProgress=Math.floor(Math.min(100,maxReachedBeat/END_BEAT*100));if(mode==='normal'){best.progress=Math.max(best.progress,lastAttemptProgress);save('vectorbeat.bestMobile6',best)}song.pause();respawn()}
+function startMode(next){mobileFullscreen();mode=next;attempt=load('vectorbeat.attempts4.'+mode,0);lastAttemptProgress=0;reset()}
 
-async function reset(asPractice = practice) {
-  if (state === 'loading') return;
-  song.pause(); state = 'loading'; winning = false; practice = asPractice;
-  attempts++; best.attempts++; save('vectorbeat.best4', best);
-  lives = 3; notes = 0; bonusNotes = 0; inv = 0; landing = 0; reaction = 0; celebrate = 0; reactionKind = '';
-  particles = []; floaters = []; maxReachedBeat = 0; runCrystals = [false, false, false]; practicePoints = [];
-  score = 0; combo = 0; stats = newStats(); checkpointBeat = 0; takeSnapshot();
-  makeLevel(); resetPlayerAt(0);
-  $('menu').style.display = 'none'; hideOverlay(); $('hud').style.display = 'flex'; $('hud').classList.toggle('practice', practice);
-  $('beatHint').style.display = 'block'; $('mascot').style.display = 'none'; $('pause').textContent = 'Pausa';
-  song.volume = .65; song.muted = !sound; seekPending = false;
-  if (song.readyState < 3) { $('beatHint').textContent = 'Cargando música…'; await waitForSong(); }
-  if (state !== 'loading') return;  // el jugador volvió al inicio mientras cargaba
-  song.currentTime = 0; syncClock(); state = 'playing'; updateHUD();
-  await playMusic();
-}
 
 function jump() {
   if (state !== 'playing' || seekPending) return;
@@ -910,40 +559,18 @@ function showPause() {
   showCard('card'); $('mascot').style.display = 'none'; $('results').style.display = 'none'; $('record').style.display = 'none'; $('stars').style.display = 'none';
   $('message').textContent = 'Un pequeño descanso';
   $('detail').textContent = 'La música y el camino continúan juntos cuando tú quieras.';
-  $('again').textContent = 'Continuar'; $('pause').textContent = 'Continuar';
+  $('again').textContent = 'Continuar'; $('pause').textContent = 'Ⅱ';
 }
 function pause() {
   if (state === 'playing') { state = 'paused'; song.pause(); held = false; jumpQueued = null; showPause(); }
-  else if (state === 'paused') { state = 'playing'; hideOverlay(); $('pause').textContent = 'Pausa'; playMusic(); }
+  else if (state === 'paused') { state = 'playing'; hideOverlay(); $('pause').textContent = 'Ⅱ'; playMusic(); }
 }
-function hurt(kind = 'ouch') {
-  if (inv > 0 || state !== 'playing') return;
-  if (!practice) lives--;
-  attempts++; best.attempts++; save('vectorbeat.best4', best);
-  reactionKind = kind; reaction = practice ? PRACTICE_DELAY : RESPAWN_DELAY; held = false; jumpQueued = null; springBoost = 0; state = 'hurt';
-  stats.hurts++; combo = 0; trail = []; song.pause(); tone(kind === 'fall' ? 150 : 180, .22, .04);
-  burst(world + PLAYER_X, y, 18); updateHUD();
-}
-async function respawn() {
-  if (!practice && lives <= 0) { finish(false); return; }
-  let b;
-  if (practice) {
-    const cp = practicePoints[practicePoints.length - 1] ?? {beat: 0, y: FLOOR - RADIUS, grav: 1, mode: 'run'};
-    b = cp.beat; resetPlayerAt(b, cp.y, cp.grav, cp.mode);
-    inv = .6;
-  } else {
-    score = checkpoint.score; combo = 0; stats = {...checkpoint.stats, hurts: stats.hurts};
-    b = checkpointBeat; resetPlayerAt(b);
-    inv = 1.2;
-  }
-  seekPending = true; state = 'playing';
-  $('beatHint').textContent = `Intento ${attempts} · ¡Tú puedes!`;
-  song.currentTime = timeAt(b); updateHUD();
-  if (document.hidden) { pause(); return; }
-  await playMusic();
-}
+function hurt(kind='ouch'){if(inv>0||state!=='playing')return;reactionKind=kind;reaction=.12;held=false;jumpQueued=null;stats.hurts++;combo=0;trail=[];song.pause();state='hurt';lastAttemptProgress=Math.floor(Math.min(100,maxReachedBeat/END_BEAT*100));if(mode==='normal'){best.progress=Math.max(best.progress,lastAttemptProgress);save('vectorbeat.bestMobile6',best)}tone(kind==='fall'?150:180,.08,.02);updateHUD()}
+async function respawn(){attempt++;save('vectorbeat.attempts4.'+mode,attempt);if(mode==='practice'&&checkpoint){restoreSnapshot(checkpoint);held=false;jumpQueued=null;particles=[];floaters=[];trail=[];inv=.15}else clearAttempt();const t=musicTime;seekPending=Math.abs(song.currentTime-t)>.01;state='playing';song.currentTime=t;syncClock();song.volume=.65;hideOverlay();updateHUD();if(document.hidden){pause();return}await playMusic();if(!song.seeking)seekPending=false}
+
+
 song.addEventListener('seeked', () => { seekPending = false; musicTime = song.currentTime; syncClock(); world = distanceAt(beatAt(musicTime)); });
-song.addEventListener('playing', syncClock);
+song.addEventListener('playing',syncClock);song.addEventListener('ended',completeSong);
 song.addEventListener('error', () => {
   enableStart();
   if (state === 'playing') {
@@ -952,50 +579,36 @@ song.addEventListener('error', () => {
   }
 });
 
-function victory() {
-  if (state !== 'playing') return;
-  state = 'celebrating'; winning = true; held = false; celebrate = 0; reactionKind = 'happy'; grav = 1; mode = 'run';
-  y = FLOOR - RADIUS; vy = 0; burst(world + PLAYER_X, 100, 100, true); tone(784, .25, .02);
-  $('beatHint').textContent = '¡Lo lograste! El portal ya es tuyo.';
-}
+function victory(){if(state!=='playing')return;finaleTier=mode==='normal'?starRating(true):0;finalePops=0;state='celebrating';winning=true;held=false;celebrate=0;reactionKind='happy';setRule('run',true);y=FLOOR-RADIUS;vy=0;floaters=[];burst(world+PLAYER_X,140,finaleTier===3?70:finaleTier===2?40:20,true);tone(784,.2,.015);$('beatHint').textContent=mode==='practice'?'¡Práctica completada!':'Tu melodía está despertando el portal…'}
 function finish(win) {
   state = 'end'; held = false; winning = win; song.pause();
-  showCard('card');
+  showCard('card');$('card').setAttribute('data-finale',String(win?finaleTier:0));
   const stars = starRating(win), acc = accuracy(), progress = Math.min(100, Math.floor(maxReachedBeat / END_BEAT * 100));
   $('mascot').style.display = win ? 'block' : 'none';
-  $('stars').style.display = win && !practice ? 'block' : 'none';
+  $('stars').style.display=win&&mode==='normal'?'block':'none';
   $('stars').textContent = starText(stars); $('stars').setAttribute('aria-label', `${stars} de 3 estrellas`);
   $('results').style.display = 'flex';
-  const newCrystals = !practice ? runCrystals.filter((f, i) => f && !best.crystals[i]).length : 0;
   $('stats').innerHTML = [
     ['Puntaje', `★ ${formatScore(score)}`], ['Precisión', `${Math.round(acc * 100)} %`],
     ['Perfecto', stats.perfect], ['Bien', stats.good], ['Temprano / Tarde', stats.early + stats.late],
     ['Fallos', stats.miss], ['Mejor combo', stats.maxCombo],
-    ['Notas', `${notes} / ${gems.length}`], ['Notas de la ruta alta', bonusNotes],
-    ['Cristales secretos', practice ? '—' : crystalText(runCrystals)], ['Intentos', attempts],
+    ['Notas', `${notes} / ${gems.length}`], ['Notas de la ruta alta',bonusNotes],['Cristales secretos',secrets.filter(c=>c.taken).length+' / 3'],['Intento',attempt],
   ].map(([k, v]) => `<span>${k}</span><b>${v}</b>`).join('');
-  let record = false;
-  if (!practice) {
-    if (win) runCrystals.forEach((f, i) => { if (f) best.crystals[i] = true; });  // los cristales cuentan al terminar el nivel
-    record = win && (stars > best.stars || (stars === best.stars && score > best.score));
-    if (record) { best.stars = stars; best.score = score; }
-    best.progress = Math.max(best.progress, progress);
-    save('vectorbeat.best4', best); renderBest();
-  }
+  const record = mode==='normal' && win && (stars > best.stars || (stars === best.stars && score > best.score));
+  if (record) { best.stars = stars; best.score = score; }
+  if(mode==='normal'){best.progress=Math.max(best.progress,progress);unlockedStars=Math.max(unlockedStars,best.stars);save('vectorbeat.unlockedStars5',unlockedStars);save('vectorbeat.bestMobile6',best);if(win){collection=[...new Set([...collection,...secrets.filter(c=>c.taken).map(c=>c.id)])];save('vectorbeat.collection4',collection)}}renderBest();renderWardrobe();
   $('record').style.display = record ? 'block' : 'none';
-  $('message').textContent = practice ? (win ? '¡Práctica completada!' : 'Práctica') : win ? '¡El cielo suena contigo!' : 'Ya conoces un poco más el ritmo';
+  $('message').textContent = win ? mode==='practice'?'¡Práctica completada!':finaleTier===3?'¡El cielo entero celebra contigo!':finaleTier===2?'¡Tu melodía iluminó el cielo!':'¡Abriste el portal!' : 'Ya conoces un poco más el ritmo';
   const noteFrac = gems.length ? notes / gems.length : 0;
-  let next = '';
-  if (practice) next = 'Ahora inténtalo en el modo normal para ganar estrellas y guardar cristales.';
-  else if (win && stars === 1) next = 'Para ★★: 60 % de las notas y 60 % de precisión.';
-  else if (win && stars === 2) next = `Para ★★★: 85 % de las notas (${Math.round(noteFrac * 100)} % ahora; busca las violetas en la ruta alta), 80 % de precisión y 2 corazones.`;
-  else if (win && stars === 3) next = '¡Tres estrellas!';
-  if (newCrystals) next += ` ¡Nuevo cristal secreto! ${unlockedMessage()}`;
+  let next=mode==='practice'?'La práctica no entrega estrellas ni desbloqueos. Prueba el modo normal.':'';
+  if (win && mode==='normal' && stars === 1) next = 'Para ★★: 60 % de las notas y 60 % de precisión.';
+  if (win && mode==='normal' && stars === 2) next = `Para ★★★: 85 % de las notas (${Math.round(noteFrac * 100)} % ahora; busca las violetas en la ruta alta), 80 % de precisión.`;
+  if (win && mode==='normal' && stars === 3) next = '¡Tres estrellas!';
   const bias = averageOffset();
   const tip = Math.abs(bias) > .045 && stats.perfect + stats.good + stats.early + stats.late >= 8
     ? ` Tiendes a saltar ${Math.round(Math.abs(bias) * 1000)} ms ${bias > 0 ? 'tarde' : 'antes'}: prueba «Calibrar».` : '';
-  $('detail').textContent = (win || practice ? next : `Llegaste al ${progress} %. Mejor avance: ${best.progress} %. Prueba el modo práctica para ensayar las partes difíciles.`) + tip;
-  $('again').textContent = 'Volver a jugar (Espacio)'; $('beatHint').style.display = 'none';
+  $('detail').textContent = (win ? next : `Llegaste al ${progress} %. Mejor avance: ${best.progress} %. Cada intento te acerca al portal.`) + tip;
+  $('again').textContent = 'Volver a jugar'; $('beatHint').style.display = 'none';
 }
 function averageOffset() {
   const offs = jumpCues.filter(c => c.offset !== undefined).map(c => c.offset);
@@ -1003,33 +616,14 @@ function averageOffset() {
 }
 
 function goHome() {
-  song.pause(); state = 'menu'; held = false; winning = false; jumpQueued = null; stopCalibration(); grav = 1; mode = 'run';
+  song.pause(); state = 'menu'; held = false; winning = false; jumpQueued = null; stopCalibration();
   $('menu').style.display = 'block'; hideOverlay(); $('hud').style.display = 'none'; $('beatHint').style.display = 'none';
   renderBest();
 }
 
-// ------------------------------------------------------------------------ práctica
-// Puntos de control propios: con C o el botón «◆ Punto», y uno automático cada 4 pulsos en terreno seguro.
-function safeHere() {
-  const b = beatAt(musicTime);
-  if (portals.some(p => p.kind !== 'speed' && Math.abs(p.b - b) < 1)) return false;  // nunca justo en un portal
-  if (mode === 'fly') return !obstacles.some(o => Math.abs(o.x - world - PLAYER_X) < 140);
-  return grounded && !obstacles.some(o => { const d = o.x - world - PLAYER_X; return d > -40 && d < 160; }) && !rings.some(r => !r.used && Math.abs(r.x - world - PLAYER_X) < 200);
-}
-function placePracticePoint(manual) {
-  if (!practice || state !== 'playing') return;
-  if (!safeHere()) { if (manual) floatText('Aquí no: busca suelo firme', '#b0548a', .8, -34); return; }
-  const b = beatAt(musicTime);
-  practicePoints.push({beat: b, y, grav, mode});
-  if (manual) { floatText('◆ Punto guardado', '#3f9d86', .9, -34); tone(1568, .08, .015); }
-}
-function autoPracticePoint(beat) {
-  const last = practicePoints[practicePoints.length - 1];
-  if (Math.floor(beat / 4) > Math.floor((last?.beat ?? 0) / 4) && beat - (last?.beat ?? 0) > 2) placePracticePoint(false);
-}
-function removePracticePoint() {
-  if (practice && practicePoints.length) { practicePoints.pop(); floatText('Punto quitado', '#987488', .8, -34); }
-}
+function renderWardrobe(){const current=SKINS.find(s=>s.id===selectedSkin);if(!current||Math.max(best.stars,unlockedStars)<current.stars)selectedSkin='mint';if(selectedFace==='smile'&&Math.max(best.stars,unlockedStars)<2)selectedFace='classic';$('skinChoices').innerHTML='';for(const skin of SKINS){const button=document.createElement('button');button.type='button';button.textContent=skin.name+(Math.max(best.stars,unlockedStars)<skin.stars?' · '+skin.stars+' ★':'');button.disabled=Math.max(best.stars,unlockedStars)<skin.stars;button.style.background=skin.color;button.setAttribute('aria-pressed',String(selectedSkin===skin.id));button.onclick=()=>{selectedSkin=skin.id;save('vectorbeat.skin4',selectedSkin);renderWardrobe()};$('skinChoices').appendChild(button)}$('faceChoice').value=selectedFace;$('smileOption').disabled=Math.max(best.stars,unlockedStars)<2;$('faceChoice').onchange=()=>{selectedFace=$('faceChoice').value;save('vectorbeat.face4',selectedFace)};$('secretRecord').textContent='Cristales descubiertos: '+collection.length+' / 3 · '+(collection.length===3?'Efecto festivo desbloqueado':'Encuéntralos en modo normal');}
+function validLevel(map){if(map.enemies!==undefined&&(!Array.isArray(map.enemies)||map.enemies.length>100||map.enemies.some(e=>!Number.isFinite(e.beat)||e.beat<0||e.beat>END_BEAT||!Number.isFinite(e.y)||e.y<120||e.y>450||!Number.isFinite(e.radius)||e.radius<8||e.radius>24||!Number.isFinite(e.amplitude)||e.amplitude<0||e.amplitude>25||!/^#[0-9a-f]{6}$/i.test(e.color))))throw Error('Enemigo inválido');if(map.portals?.some(p=>p.kind&&!['speed','reset'].includes(p.kind)))throw Error('Portal inválido');if(!map||!Number.isFinite(map.durationSeconds)||Math.abs(map.durationSeconds-192.048)>.2||map.version!==5||map.bpm!==BPM||map.endBeat!==END_BEAT)throw Error('Usa un mapa v5 de la canción completa: 92,5 BPM y 296 pulsos');for(const key of ['sections','portals','phrases','flightObstacles','flightNotes','rings','secrets','accents'])if(!Array.isArray(map[key])||map[key].length>2000)throw Error('Falta o es demasiado grande: '+key);if(map.sections.length<4||map.sections.length>16||map.secrets.length!==3)throw Error('El mapa necesita entre 4 y 16 tramos y 3 secretos');let last=-1;for(const v of map.sections){if(!Number.isFinite(v.startBeat)||v.startBeat<=last||!Number.isFinite(v.pixelsPerBeat)||v.pixelsPerBeat<80||v.pixelsPerBeat>400||!Array.isArray(v.palette)||v.palette.length!==3||v.palette.some(c=>!/^#[0-9a-f]{6}$/i.test(c))||!/^#[0-9a-f]{6}$/i.test(v.groundTint))throw Error('Tramo inválido');last=v.startBeat}for(const list of [map.portals,map.phrases,map.flightObstacles,map.rings,map.accents])for(const v of list)if(!Number.isFinite(v.time)||v.time<0||v.time>map.durationSeconds)throw Error('Tiempo inválido');if(map.sections[0].startBeat!==0||map.sections.at(-1).startBeat>=END_BEAT)throw Error('Los tramos deben comenzar en 0 y terminar antes del portal');if(map.portals.some((p,i)=>i&&p.time<=map.portals[i-1].time))throw Error('Ordena los portales por tiempo');for(const o of map.flightObstacles)if(!['cone','rock','fire'].includes(o.kind)||!['floor','ceiling'].includes(o.surface)||!Number.isFinite(o.height)||o.height<20||o.height>220)throw Error('Obstáculo de vuelo inválido');for(const r of map.rings)if(!Number.isFinite(r.y)||r.y<80||r.y>520)throw Error('Anillo inválido');if(new Set(map.secrets.map(c=>c.id)).size!==3)throw Error('Los cristales necesitan IDs únicos');if(map.portals.some(p=>!['run','invert','fly'].includes(p.rule)))throw Error('Regla de portal inválida');if(map.phrases.some(p=>!['single','pair','triple','gap','ring-gap','spring'].includes(p.pattern)||!['cone','rock','fire'].includes(p.obstacle)||!['floor','ceiling'].includes(p.surface)))throw Error('Frase inválida');for(const n of [...map.flightNotes,...map.secrets])if(!Number.isFinite(n.beat)||n.beat<0||n.beat>END_BEAT||!Number.isFinite(n.y)||n.y<80||n.y>520)throw Error('Coleccionable inválido');return true}
+async function importMap(e){const file=e.target.files?.[0];if(!file)return;try{if(file.size>150000)throw Error('El mapa es demasiado grande');const map=JSON.parse(await file.text());validLevel(map);LEVEL=map;goHome();makeLevel();$('mapStatus').textContent='Mapa cargado: '+map.title}catch(err){$('mapStatus').textContent='No se cargó: '+err.message}e.target.value=''}
 
 // --------------------------------------------------------------------- calibración
 // Suena un clic cada 0,6 s; el jugador toca al ritmo y medimos el desfase promedio.
@@ -1089,44 +683,12 @@ function closeCalibration() {
   else hideOverlay();
 }
 
-// ------------------------------------------------------------------- colores del cubo
-// Se desbloquean con estrellas + cristales secretos (máximo 3 + 3).
-const SKINS = [
-  {id: 'menta',    name: 'Menta',    need: 0, hue: 0,    trail: '#78c8b5', dot: '#80cfbb'},
-  {id: 'cielo',    name: 'Cielo',    need: 1, hue: 40,   trail: '#7fb2e5', dot: '#86b9ee'},
-  {id: 'lavanda',  name: 'Lavanda',  need: 2, hue: 105,  trail: '#b39ae0', dot: '#b9a0e8'},
-  {id: 'coral',    name: 'Coral',    need: 3, hue: 185,  trail: '#f19aa8', dot: '#f4a0ae'},
-  {id: 'limon',    name: 'Limón',    need: 4, hue: -95,  trail: '#c9d77a', dot: '#cfdc7f'},
-  {id: 'ocaso',    name: 'Ocaso',    need: 5, hue: 205,  trail: '#f2b07a', dot: '#f4b47c', sat: 1.3},
-  {id: 'arcoiris', name: 'Arcoíris', need: 6, hue: null, trail: '#d6a6e8', dot: 'conic-gradient(#f4a0ae,#f4d47c,#80cfbb,#86b9ee,#b9a0e8,#f4a0ae)'},
-];
-function unlockedPoints() { return best.stars + best.crystals.filter(Boolean).length; }
-function skin() { return SKINS.find(s => s.id === skinId && s.need <= unlockedPoints()) ?? SKINS[0]; }
-function skinFilter() {
-  const s = skin();
-  if (s.hue === 0) return 'none';
-  const hue = s.hue === null ? (animTime * 120) % 360 : s.hue;
-  return `hue-rotate(${hue}deg)${s.sat ? ` saturate(${s.sat})` : ''}`;
-}
-function unlockedMessage() {
-  const next = SKINS.find(s => s.need > unlockedPoints());
-  return next ? `Siguiente color: ${next.name} (${next.need} ★/◆).` : 'Desbloqueaste todos los colores.';
-}
-function renderSkins() {
-  const pts = unlockedPoints();
-  $('skins').innerHTML = SKINS.map(s => {
-    const locked = s.need > pts, active = skin().id === s.id;
-    return `<button class="skin${active ? ' on' : ''}" data-skin="${s.id}" ${locked ? 'disabled' : ''} aria-pressed="${active}" title="${locked ? `Necesitas ${s.need} entre estrellas y cristales` : s.name}"><i style="background:${s.dot}"></i>${locked ? `🔒 ${s.need}` : s.name}</button>`;
-  }).join('');
-  $('crystalsFound').textContent = `Cristales secretos ${crystalText(best.crystals)} · Estrellas ${starText(best.stars)}`;
-}
-
 // ------------------------------------------------------------------------ bucle
 function frame(ms) {
   const dt = Math.min((ms - lastFrame) / 1000, .04); lastFrame = ms; animTime += dt;
-  if (state === 'playing') { updateFromMusic(ms); updateHUD(); }
-  else if (state === 'hurt') { reaction -= dt; animateParticles(dt); if (reactionKind === 'fall') y += 90 * dt * grav; if (reaction <= 0) respawn(); }
-  else if (state === 'celebrating') { celebrate += dt; animateParticles(dt); song.volume = .65 * Math.max(0, 1 - celebrate / 2.8); if (celebrate > 2.8) finish(true); }
+  if(state==='playing'){if(song.ended&&!seekPending)completeSong();else updateFromMusic(ms);updateHUD()}
+  else if (state === 'hurt') { reaction -= dt; if (reactionKind === 'fall') y = Math.min(635, y + 90 * dt * gravityDir); if (reaction <= 0) respawn(); }
+  else if(state==='celebrating')updateFinale(dt);
   else if (state === 'calibrating') updateCalibration();
   for (const f of floaters) f.life -= dt;
   floaters = floaters.filter(f => f.life > 0);
@@ -1135,46 +697,41 @@ function frame(ms) {
 }
 
 // ----------------------------------------------------------------------- eventos
-function enableStart() { $('start').disabled = false; $('start').textContent = 'Jugar'; $('practiceBtn').disabled = false; }
+function enableStart() { $('start').disabled = false; $('start').textContent = 'Jugar'; }
 if (song.readyState < 3) {
-  $('start').disabled = true; $('practiceBtn').disabled = true; $('start').textContent = 'Cargando…';
+  $('start').disabled = true; $('start').textContent = 'Cargando…';
   song.addEventListener('canplay', enableStart, {once: true});
   setTimeout(enableStart, 3000);  // algunos móviles no precargan audio sin un toque
 }
-$('start').onclick = () => reset(false);
-$('practiceBtn').onclick = () => reset(true);
-$('again').onclick = () => state === 'paused' ? pause() : reset();
+$('settingsOpen').onclick=()=>{$('settings').hidden=false};$('settingsClose').onclick=()=>{$('settings').hidden=true};$('exitToMenu').onclick=()=>{$('settings').hidden=true;goHome()};
+$('start').onclick=()=>startMode('normal');$('practiceStart').onclick=()=>startMode('practice');$('checkpointBtn').onclick=placeCheckpoint;$('deleteCheckpoint').onclick=removeCheckpoint;$('wardrobeOpen').onclick=()=>{$('wardrobe').hidden=!$('wardrobe').hidden;renderWardrobe()};$('mapInput').onchange=importMap;
+$('again').onclick=()=>state==='paused'?pause():reset();
 $('pause').onclick = pause;
 $('home').onclick = goHome;
-$('checkpoint').onclick = () => placePracticePoint(true);
-$('sound').onclick = () => { sound = !sound; song.muted = !sound; $('sound').textContent = 'Sonido: ' + (sound ? 'sí' : 'no'); };
-$('calibrate').onclick = openCalibration;
+$('sound').onclick = () => { sound = !sound; song.muted = !sound; $('sound').textContent = sound?'♫':'♩';$('sound').setAttribute('aria-pressed',String(sound)); };
+$('calibrate').onclick = ()=>{$('settings').hidden=true;openCalibration()};
 $('calibStart').onclick = startCalibration;
 $('calibReset').onclick = () => { calib = 0; save('vectorbeat.calib', 0); $('calibText').textContent = 'Ajuste restablecido a 0 ms.'; };
 $('calibClose').onclick = closeCalibration;
 $('calibPad').onpointerdown = e => { e.preventDefault(); calibTap(); };
-$('skins').onclick = e => { const b = e.target.closest('[data-skin]'); if (!b || b.disabled) return; skinId = b.dataset.skin; save('vectorbeat.skin', skinId); renderSkins(); };
 
 canvas.onpointerdown = e => { e.preventDefault(); jump(); };
 $('jump').onpointerdown = e => { e.preventDefault(); jump(); };
 window.addEventListener('pointerup', release);
 window.addEventListener('pointercancel', release);
 window.addEventListener('keydown', e => {
-  if (['Space', 'ArrowUp', 'Enter'].includes(e.code) && state === 'end') { e.preventDefault(); if (!e.repeat) reset(); return; }
   if (['Space', 'ArrowUp'].includes(e.code)) {
     e.preventDefault();
     if (e.repeat) return;
     if (state === 'calibrating') { calibTap(); return; }
     jump();
   }
+  if(e.code==='KeyC'){e.preventDefault();placeCheckpoint()}if(e.code==='KeyZ'){e.preventDefault();removeCheckpoint()}if(e.code==='KeyR'&&state==='playing'){e.preventDefault();manualRetry()}
   if (e.code === 'KeyP' && state !== 'calibrating') pause();
-  if (e.code === 'KeyR' && (state === 'playing' || state === 'paused' || state === 'hurt')) reset();
-  if (e.code === 'KeyC') placePracticePoint(true);
-  if (e.code === 'KeyX') removePracticePoint();
   if (e.code === 'Escape' && state === 'calibrating') closeCalibration();
 });
 window.addEventListener('keyup', e => { if (['Space', 'ArrowUp'].includes(e.code)) release(); });
 window.addEventListener('blur', () => { if (state === 'playing') pause(); });
 document.addEventListener('visibilitychange', () => { if (document.hidden && state === 'playing') pause(); });
 
-makeLevel(); renderBest(); requestAnimationFrame(frame);
+validLevel(LEVEL);makeLevel();renderBest();renderWardrobe();requestAnimationFrame(frame);
