@@ -1,4 +1,4 @@
-VECTOR BEAT: CROCHET — NIVEL 13 COMPLETO · v11
+VECTOR BEAT: CROCHET — NIVEL 13 COMPLETO · v12
 
 ABRIR: descomprime y abre index.html en un navegador moderno. Si tu navegador
 bloquea archivos locales, sirve esta carpeta con: python -m http.server 8000
@@ -22,9 +22,9 @@ NUEVO
 • Cinco portales INICIO ↶: trampas por contacto. Salta para esquivarlas.
   Si las tocas, canción y recorrido vuelven al comienzo incluso en práctica.
 • Cinco portales ◷: cámara lenta durante 2 pulsos, sin perder sincronización.
-• 46 enemigos voladores y 16 lagartijas tejidas con cuatro cuadros de marcha.
-• Rutas altas: 7 plataformas que suben/bajan hasta 22 píxeles, 7 islas altas
-  y 6 columnas adicionales. Usa doble salto tras el trampolín para subir.
+• 23 enemigos voladores y 6 lagartijas tejidas con cuatro cuadros de marcha.
+• Rutas altas separadas: 7 plataformas que suben/bajan hasta 12 píxeles,
+  sus plataformas de acceso/salida y 4 columnas adicionales. Usa doble salto tras el trampolín para subir.
 • 13 potenciadores: ◇ un escudo de un golpe, U imán de notas y ↑³ tercer salto.
   Cada efecto dura 8 pulsos. El escudo no protege de una caída ni de un retorno.
 • Puntuación, tres cristales secretos, estrellas, caras y colores desbloqueables.
@@ -33,7 +33,7 @@ NUEVO
 
 EDITAR: level-map.json es el mapa legible. level-map.js contiene los mismos
 datos para abrir directamente sin servidor. Tras editar JSON, actualiza el JS
-(o importa JSON desde Ajustes). Usa versión 11; hay validación de los campos.
+(o importa JSON desde Ajustes). Usa versión 12; hay validación de los campos.
 Datos nuevos: walkers, powerups, returnPortals, portales kind:slow,
 aros kind:gravity y terrain type:moving. Duraciones en pulsos de la canción.
 Movimiento determinista: la pausa y la cámara lenta también paran/reducen
@@ -48,3 +48,25 @@ sin muertes y con todos los portales temporales atravesados. Pruebas separadas
 de poderes, gravedad/checkpoints, retorno, plataformas con pasajero, final
 nativo del audio, carga y límites de sprites, cuatro tamaños horizontales.
 Revisión visual con Canvas nativo; aún falta prueba manual en celular real.
+
+CLIMA Y MUROS v12
+• Separación comprobada de plataformas, enemigos, obstáculos y portales.
+  Las rutas altas de trampolín ya no se montan sobre otras islas.
+  Cada encuentro usa roca/nudo, lagartija o polilla, sin apilar enemigos.
+• Clima por sectores, con transiciones suaves de 4 pulsos: lluvia creciente,
+  rayos localizados en nubes, neblina suave y estrellas fugaces.
+  Los efectos se dibujan detrás de plataformas, personajes y peligros.
+  El clima se detiene al pausar y sigue el reloj de música en cámara lenta.
+  Con movimiento reducido se eliminan rayos y meteoros animados.
+• Sector de vuelo (pulsos 225–240): tres pasos entre muros verticales,
+  seguidos por dos corredores entre paredes horizontales. Los muros tienen
+  textura de crochet y colisión real; conserva una altura central al cruzar.
+• Datos editables nuevos: weather (rain/fog/lightning/meteors, valores 0–1)
+  y walls (startBeat/endBeat/y/height/orientation/variant).
+• Ajustes de posición de algunos portales evitan cruces con las plataformas.
+  Los dos pulsos de cámara lenta continúan completos en cada portal.
+• Validación v12: auditoría de envolventes visuales y recorridos móviles sin
+  superposiciones, recorrido completo sin poderes ni muertes a 120 Hz,
+  colisiones y huecos de muros, acceso a la ruta alta móvil, clima/pausa,
+  movimiento reducido y seis escenas revisadas con Canvas nativo.
+  No se ha hecho prueba manual de navegador/celular en esta revisión.

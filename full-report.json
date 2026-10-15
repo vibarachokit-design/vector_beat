@@ -1,5 +1,5 @@
 {
-  "version": 11,
+  "version": 12,
   "audioSeconds": 192.048,
   "bpm": 92.5,
   "beats": 296,
@@ -7,12 +7,12 @@
   "slowPlaybackRate": 0.65,
   "slowWindows": 5,
   "approxWallSeconds": 195.5407234927235,
-  "flyingEnemies": 46,
-  "walkingEnemies": 16,
+  "flyingEnemies": 23,
+  "walkingEnemies": 6,
   "returnPortals": 5,
   "gravityRings": 5,
   "powerups": 13,
-  "extraTerrain": 20,
+  "extraTerrain": 25,
   "validation": {
     "fullCourseWithoutPowerups": "passed",
     "gravityCheckpoint": "passed",
@@ -39,6 +39,14 @@
       ]
     ],
     "nativeCanvasVisualQA": "passed",
-    "manualMobileBrowser": "pending"
-  }
+    "manualMobileBrowser": "pending",
+    "visualOverlapConflicts": 0,
+    "portalOverlapConflicts": 0,
+    "wallCollisionAndGaps": "passed",
+    "weatherPauseAndReducedMotion": "passed",
+    "mobileUpperRoute": "passed",
+    "nativeCanvasScenes": 6
+  },
+  "walls": 10,
+  "weatherSections": 10
 }

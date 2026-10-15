@@ -1,11 +1,11 @@
 {
-  "version": 11,
+  "version": 12,
   "title": "Vector Beat: Crochet · Nivel 13 completo",
   "bpm": 92.5,
   "offset": 0.01706522,
   "endBeat": 296,
   "sourceAudio": "music.mp3",
-  "notes": "Canción completa, 296 pulsos y 10 sectores. El audio es el reloj maestro. Los portales lentos cambian playbackRate con tono conservado. Retornos esquivables por contacto. Datos editables.",
+  "notes": "Canción completa, 296 pulsos y 10 sectores. El audio es el reloj maestro. Los portales lentos cambian playbackRate con tono conservado. Retornos esquivables por contacto. Datos editables. v12: rutas de plataformas separadas y encuentros exclusivos; muros de vuelo 226–239, clima gradual ligado al reloj del audio.",
   "sections": [
     {
       "startBeat": 0,
@@ -128,7 +128,7 @@
     },
     {
       "id": "reset-16",
-      "time": 14.28733549027027,
+      "time": 15.45490305783784,
       "rule": "run",
       "kind": "reset",
       "label": "Ritmo base"
@@ -162,7 +162,7 @@
     },
     {
       "id": "reset-56",
-      "time": 40.23328143621622,
+      "time": 40.88193008486487,
       "rule": "run",
       "kind": "reset",
       "label": "Ritmo base"
@@ -235,19 +235,19 @@
       "label": "Velocidad ×2"
     },
     {
-      "id": "reset-152",
-      "time": 102.50355170648649,
-      "rule": "run",
-      "kind": "reset",
-      "label": "Ritmo base"
-    },
-    {
       "id": "slow-158",
-      "time": 102.5035517064865,
+      "time": 102.6981463010811,
       "kind": "slow",
       "durationBeats": 2,
       "rate": 0.65,
       "label": "CÁMARA LENTA"
+    },
+    {
+      "id": "reset-152",
+      "time": 103.34679494972976,
+      "rule": "run",
+      "kind": "reset",
+      "label": "Ritmo base"
     },
     {
       "id": "gravity-second",
@@ -264,7 +264,7 @@
     },
     {
       "id": "reset-176",
-      "time": 118.07111927405406,
+      "time": 118.71976792270272,
       "rule": "run",
       "kind": "reset",
       "label": "Ritmo base"
@@ -383,7 +383,8 @@
       "scoreMeasure": 4,
       "scoreVoice": 1,
       "scoreNoteBeat": 12,
-      "scoreDurationBeats": 1.0
+      "scoreDurationBeats": 1.0,
+      "encounter": "walker"
     },
     {
       "id": "phrase-16",
@@ -409,7 +410,8 @@
       "scoreMeasure": 6,
       "scoreVoice": 1,
       "scoreNoteBeat": 20,
-      "scoreDurationBeats": 0.5
+      "scoreDurationBeats": 0.5,
+      "authoredRoute": true
     },
     {
       "id": "phrase-24",
@@ -435,7 +437,8 @@
       "scoreMeasure": 8,
       "scoreVoice": 1,
       "scoreNoteBeat": 28,
-      "scoreDurationBeats": 1.0
+      "scoreDurationBeats": 1.0,
+      "encounter": "moth"
     },
     {
       "id": "phrase-50",
@@ -461,7 +464,8 @@
       "scoreMeasure": 14,
       "scoreVoice": 1,
       "scoreNoteBeat": 54.0,
-      "scoreDurationBeats": 0.5
+      "scoreDurationBeats": 0.5,
+      "encounter": "walker"
     },
     {
       "id": "phrase-58",
@@ -474,7 +478,8 @@
       "scoreMeasure": 15,
       "scoreVoice": 1,
       "scoreNoteBeat": 58.0,
-      "scoreDurationBeats": 0.5
+      "scoreDurationBeats": 0.5,
+      "authoredRoute": true
     },
     {
       "id": "phrase-60",
@@ -500,7 +505,8 @@
       "scoreMeasure": 18,
       "scoreVoice": 0,
       "scoreNoteBeat": 68,
-      "scoreDurationBeats": 0.5
+      "scoreDurationBeats": 0.5,
+      "encounter": "moth"
     },
     {
       "id": "phrase-70",
@@ -565,7 +571,8 @@
       "scoreMeasure": 22,
       "scoreVoice": 0,
       "scoreNoteBeat": 86.0,
-      "scoreDurationBeats": 0.5
+      "scoreDurationBeats": 0.5,
+      "encounter": "moth"
     },
     {
       "id": "phrase-90",
@@ -604,7 +611,8 @@
       "scoreMeasure": 26,
       "scoreVoice": 0,
       "scoreNoteBeat": 100,
-      "scoreDurationBeats": 0.5
+      "scoreDurationBeats": 0.5,
+      "encounter": "walker"
     },
     {
       "id": "phrase-104",
@@ -630,7 +638,8 @@
       "scoreMeasure": 28,
       "scoreVoice": 0,
       "scoreNoteBeat": 108,
-      "scoreDurationBeats": 0.5
+      "scoreDurationBeats": 0.5,
+      "authoredRoute": true
     },
     {
       "id": "phrase-112",
@@ -643,7 +652,8 @@
       "scoreMeasure": 29,
       "scoreVoice": 1,
       "scoreNoteBeat": 112,
-      "scoreDurationBeats": 0.5
+      "scoreDurationBeats": 0.5,
+      "encounter": "moth"
     },
     {
       "id": "phrase-116",
@@ -682,7 +692,8 @@
       "scoreMeasure": 32,
       "scoreVoice": 0,
       "scoreNoteBeat": 124,
-      "scoreDurationBeats": 0.5
+      "scoreDurationBeats": 0.5,
+      "encounter": "walker"
     },
     {
       "id": "phrase-146",
@@ -695,7 +706,8 @@
       "scoreMeasure": 37,
       "scoreVoice": 1,
       "scoreNoteBeat": 146.0,
-      "scoreDurationBeats": 0.5
+      "scoreDurationBeats": 0.5,
+      "encounter": "moth"
     },
     {
       "id": "phrase-150",
@@ -721,7 +733,8 @@
       "scoreMeasure": 39,
       "scoreVoice": 1,
       "scoreNoteBeat": 154.0,
-      "scoreDurationBeats": 0.5
+      "scoreDurationBeats": 0.5,
+      "authoredRoute": true
     },
     {
       "id": "phrase-156",
@@ -773,7 +786,8 @@
       "scoreMeasure": 44,
       "scoreVoice": 1,
       "scoreNoteBeat": 172,
-      "scoreDurationBeats": 0.5
+      "scoreDurationBeats": 0.5,
+      "encounter": "moth"
     },
     {
       "id": "phrase-176",
@@ -838,7 +852,8 @@
       "scoreMeasure": 50,
       "scoreVoice": 0,
       "scoreNoteBeat": 196,
-      "scoreDurationBeats": 0.5
+      "scoreDurationBeats": 0.5,
+      "encounter": "moth"
     },
     {
       "id": "phrase-200",
@@ -851,7 +866,8 @@
       "scoreMeasure": 51,
       "scoreVoice": 0,
       "scoreNoteBeat": 200,
-      "scoreDurationBeats": 0.5
+      "scoreDurationBeats": 0.5,
+      "authoredRoute": true
     },
     {
       "id": "phrase-204",
@@ -903,7 +919,8 @@
       "scoreMeasure": 55,
       "scoreVoice": 0,
       "scoreNoteBeat": 216,
-      "scoreDurationBeats": 0.5
+      "scoreDurationBeats": 0.5,
+      "authoredRoute": true
     },
     {
       "id": "phrase-220",
@@ -916,7 +933,8 @@
       "scoreMeasure": 56,
       "scoreVoice": 0,
       "scoreNoteBeat": 220,
-      "scoreDurationBeats": 0.5
+      "scoreDurationBeats": 0.5,
+      "encounter": "walker"
     },
     {
       "id": "phrase-244",
@@ -929,7 +947,8 @@
       "scoreMeasure": 62,
       "scoreVoice": 1,
       "scoreNoteBeat": 244,
-      "scoreDurationBeats": 0.5
+      "scoreDurationBeats": 0.5,
+      "encounter": "moth"
     },
     {
       "id": "phrase-248",
@@ -968,7 +987,8 @@
       "scoreMeasure": 66,
       "scoreVoice": 0,
       "scoreNoteBeat": 260,
-      "scoreDurationBeats": 0.5
+      "scoreDurationBeats": 0.5,
+      "encounter": "walker"
     },
     {
       "id": "phrase-264",
@@ -981,7 +1001,8 @@
       "scoreMeasure": 67,
       "scoreVoice": 0,
       "scoreNoteBeat": 264,
-      "scoreDurationBeats": 0.5
+      "scoreDurationBeats": 0.5,
+      "authoredRoute": true
     },
     {
       "id": "phrase-268",
@@ -1007,7 +1028,8 @@
       "scoreMeasure": 69,
       "scoreVoice": 0,
       "scoreNoteBeat": 272,
-      "scoreDurationBeats": 0.5
+      "scoreDurationBeats": 0.5,
+      "encounter": "moth"
     },
     {
       "id": "phrase-276",
@@ -1062,27 +1084,6 @@
     {
       "id": "flight-142",
       "time": 92.12517,
-      "surface": "floor",
-      "height": 160,
-      "kind": "fire"
-    },
-    {
-      "id": "flight-228",
-      "time": 147.911111,
-      "surface": "floor",
-      "height": 180,
-      "kind": "rock"
-    },
-    {
-      "id": "flight-234",
-      "time": 151.800454,
-      "surface": "ceiling",
-      "height": 160,
-      "kind": "rock"
-    },
-    {
-      "id": "flight-238",
-      "time": 154.401088,
       "surface": "floor",
       "height": 160,
       "kind": "fire"
@@ -2467,206 +2468,6 @@
   ],
   "enemies": [
     {
-      "id": "flyer-6",
-      "beat": 50.52062028583333,
-      "y": 415,
-      "radius": 15,
-      "amplitude": 5,
-      "color": "#bfabd9"
-    },
-    {
-      "id": "flyer-7",
-      "beat": 54.511995285833336,
-      "y": 415,
-      "radius": 15,
-      "amplitude": 5,
-      "color": "#bfabd9"
-    },
-    {
-      "id": "flyer-10",
-      "beat": 68.52667028583333,
-      "y": 245,
-      "radius": 15,
-      "amplitude": 5,
-      "color": "#bfabd9"
-    },
-    {
-      "id": "flyer-11",
-      "beat": 70.51341611916665,
-      "y": 245,
-      "radius": 15,
-      "amplitude": 5,
-      "color": "#bfabd9"
-    },
-    {
-      "id": "flyer-14",
-      "beat": 82.5234619525,
-      "y": 245,
-      "radius": 15,
-      "amplitude": 5,
-      "color": "#bfabd9"
-    },
-    {
-      "id": "flyer-15",
-      "beat": 86.51499111916667,
-      "y": 245,
-      "radius": 15,
-      "amplitude": 5,
-      "color": "#bfabd9"
-    },
-    {
-      "id": "flyer-17",
-      "beat": 92.52887861916666,
-      "y": 245,
-      "radius": 15,
-      "amplitude": 5,
-      "color": "#bfabd9"
-    },
-    {
-      "id": "flyer-18",
-      "beat": 100.5117827858333,
-      "y": 415,
-      "radius": 15,
-      "amplitude": 5,
-      "color": "#bfabd9"
-    },
-    {
-      "id": "flyer-21",
-      "beat": 112.52167445249998,
-      "y": 415,
-      "radius": 15,
-      "amplitude": 5,
-      "color": "#bfabd9"
-    },
-    {
-      "id": "flyer-23",
-      "beat": 120.52246195249998,
-      "y": 415,
-      "radius": 15,
-      "amplitude": 5,
-      "color": "#bfabd9"
-    },
-    {
-      "id": "flyer-24",
-      "beat": 124.51383695249999,
-      "y": 415,
-      "radius": 15,
-      "amplitude": 5,
-      "color": "#bfabd9"
-    },
-    {
-      "id": "flyer-25",
-      "beat": 146.52930716083333,
-      "y": 415,
-      "radius": 15,
-      "amplitude": 5,
-      "color": "#bfabd9"
-    },
-    {
-      "id": "flyer-26",
-      "beat": 150.5207207025,
-      "y": 415,
-      "radius": 15,
-      "amplitude": 5,
-      "color": "#bfabd9"
-    },
-    {
-      "id": "flyer-29",
-      "beat": 164.5175154525,
-      "y": 245,
-      "radius": 18,
-      "amplitude": 9,
-      "color": "#e6aa9b"
-    },
-    {
-      "id": "flyer-31",
-      "beat": 172.51824128583334,
-      "y": 245,
-      "radius": 18,
-      "amplitude": 9,
-      "color": "#e6aa9b"
-    },
-    {
-      "id": "flyer-34",
-      "beat": 184.52827941083333,
-      "y": 245,
-      "radius": 18,
-      "amplitude": 9,
-      "color": "#e6aa9b"
-    },
-    {
-      "id": "flyer-35",
-      "beat": 188.5196929525,
-      "y": 245,
-      "radius": 18,
-      "amplitude": 9,
-      "color": "#e6aa9b"
-    },
-    {
-      "id": "flyer-36",
-      "beat": 196.52041878583336,
-      "y": 415,
-      "radius": 18,
-      "amplitude": 9,
-      "color": "#e6aa9b"
-    },
-    {
-      "id": "flyer-39",
-      "beat": 208.51255661916667,
-      "y": 415,
-      "radius": 18,
-      "amplitude": 9,
-      "color": "#e6aa9b"
-    },
-    {
-      "id": "flyer-42",
-      "beat": 220.52259474416667,
-      "y": 415,
-      "radius": 18,
-      "amplitude": 9,
-      "color": "#e6aa9b"
-    },
-    {
-      "id": "flyer-43",
-      "beat": 244.52477224416668,
-      "y": 245,
-      "radius": 18,
-      "amplitude": 9,
-      "color": "#e6aa9b"
-    },
-    {
-      "id": "flyer-45",
-      "beat": 252.52549807749998,
-      "y": 245,
-      "radius": 18,
-      "amplitude": 9,
-      "color": "#e6aa9b"
-    },
-    {
-      "id": "flyer-46",
-      "beat": 260.52622391083327,
-      "y": 415,
-      "radius": 18,
-      "amplitude": 9,
-      "color": "#e6aa9b"
-    },
-    {
-      "id": "flyer-49",
-      "beat": 272.5183617441666,
-      "y": 415,
-      "radius": 18,
-      "amplitude": 9,
-      "color": "#e6aa9b"
-    },
-    {
-      "id": "flyer-50",
-      "beat": 276.52767403583334,
-      "y": 415,
-      "radius": 18,
-      "amplitude": 9,
-      "color": "#e6aa9b"
-    },
-    {
       "id": "air-32-0",
       "beat": 37,
       "y": 410,
@@ -2709,30 +2510,6 @@
     {
       "id": "air-128-2",
       "beat": 141,
-      "y": 410,
-      "radius": 18,
-      "amplitude": 9,
-      "color": "#e6aa9b"
-    },
-    {
-      "id": "air-224-0",
-      "beat": 229,
-      "y": 410,
-      "radius": 18,
-      "amplitude": 9,
-      "color": "#e6aa9b"
-    },
-    {
-      "id": "air-224-1",
-      "beat": 233,
-      "y": 175,
-      "radius": 18,
-      "amplitude": 9,
-      "color": "#e6aa9b"
-    },
-    {
-      "id": "air-224-2",
-      "beat": 237,
       "y": 410,
       "radius": 18,
       "amplitude": 9,
@@ -2803,34 +2580,74 @@
       "color": "#ff8a30"
     },
     {
-      "id": "swarm-227",
-      "beat": 227,
-      "y": 405,
-      "radius": 16,
+      "id": "encounter-moth-5",
+      "beat": 28.553041119166668,
+      "y": 415,
+      "radius": 17,
       "amplitude": 7,
       "color": "#ff8a30"
     },
     {
-      "id": "swarm-231",
-      "beat": 231,
-      "y": 174,
-      "radius": 16,
+      "id": "encounter-moth-10",
+      "beat": 68.55667028583333,
+      "y": 245,
+      "radius": 17,
       "amplitude": 7,
       "color": "#ff8a30"
     },
     {
-      "id": "swarm-235",
-      "beat": 235,
-      "y": 405,
-      "radius": 16,
+      "id": "encounter-moth-15",
+      "beat": 86.54499111916667,
+      "y": 245,
+      "radius": 17,
       "amplitude": 7,
       "color": "#ff8a30"
     },
     {
-      "id": "swarm-239",
-      "beat": 239,
-      "y": 174,
-      "radius": 16,
+      "id": "encounter-moth-21",
+      "beat": 112.55167445249997,
+      "y": 415,
+      "radius": 17,
+      "amplitude": 7,
+      "color": "#ff8a30"
+    },
+    {
+      "id": "encounter-moth-25",
+      "beat": 146.55930716083333,
+      "y": 415,
+      "radius": 17,
+      "amplitude": 7,
+      "color": "#ff8a30"
+    },
+    {
+      "id": "encounter-moth-31",
+      "beat": 172.54824128583334,
+      "y": 245,
+      "radius": 17,
+      "amplitude": 7,
+      "color": "#ff8a30"
+    },
+    {
+      "id": "encounter-moth-36",
+      "beat": 196.55041878583333,
+      "y": 415,
+      "radius": 17,
+      "amplitude": 7,
+      "color": "#ff8a30"
+    },
+    {
+      "id": "encounter-moth-43",
+      "beat": 244.55477224416668,
+      "y": 245,
+      "radius": 17,
+      "amplitude": 7,
+      "color": "#ff8a30"
+    },
+    {
+      "id": "encounter-moth-49",
+      "beat": 272.54836174416664,
+      "y": 415,
+      "radius": 17,
       "amplitude": 7,
       "color": "#ff8a30"
     }
@@ -2841,139 +2658,6 @@
     "portrait": false
   },
   "terrain": [
-    {
-      "id": "lift-3",
-      "startBeat": 21.252407785833334,
-      "endBeat": 22.752407785833334,
-      "height": 220,
-      "type": "moving",
-      "variant": "teal",
-      "amplitude": 22,
-      "periodBeats": 4,
-      "phase": 0
-    },
-    {
-      "id": "high-3",
-      "startBeat": 22.852407785833336,
-      "endBeat": 23.602407785833336,
-      "height": 185,
-      "type": "floating",
-      "variant": "plum"
-    },
-    {
-      "id": "lift-8",
-      "startBeat": 59.25125361916666,
-      "endBeat": 60.75125361916666,
-      "height": 220,
-      "type": "moving",
-      "variant": "plum",
-      "amplitude": 22,
-      "periodBeats": 4,
-      "phase": 0
-    },
-    {
-      "id": "high-8",
-      "startBeat": 60.85125361916666,
-      "endBeat": 61.60125361916666,
-      "height": 185,
-      "type": "floating",
-      "variant": "plum"
-    },
-    {
-      "id": "lift-20",
-      "startBeat": 109.24241611916665,
-      "endBeat": 110.74241611916665,
-      "height": 220,
-      "type": "moving",
-      "variant": "plum",
-      "amplitude": 22,
-      "periodBeats": 4,
-      "phase": 0
-    },
-    {
-      "id": "high-20",
-      "startBeat": 110.84241611916664,
-      "endBeat": 111.59241611916664,
-      "height": 185,
-      "type": "floating",
-      "variant": "plum"
-    },
-    {
-      "id": "lift-27",
-      "startBeat": 155.27793174416666,
-      "endBeat": 156.77793174416666,
-      "height": 220,
-      "type": "moving",
-      "variant": "teal",
-      "amplitude": 22,
-      "periodBeats": 4,
-      "phase": 0
-    },
-    {
-      "id": "high-27",
-      "startBeat": 156.87793174416666,
-      "endBeat": 157.62793174416666,
-      "height": 185,
-      "type": "floating",
-      "variant": "plum"
-    },
-    {
-      "id": "lift-37",
-      "startBeat": 201.2597310775,
-      "endBeat": 202.7597310775,
-      "height": 220,
-      "type": "moving",
-      "variant": "teal",
-      "amplitude": 22,
-      "periodBeats": 4,
-      "phase": 0
-    },
-    {
-      "id": "high-37",
-      "startBeat": 202.8597310775,
-      "endBeat": 203.6097310775,
-      "height": 185,
-      "type": "floating",
-      "variant": "plum"
-    },
-    {
-      "id": "lift-41",
-      "startBeat": 217.24328245249995,
-      "endBeat": 218.74328245249995,
-      "height": 220,
-      "type": "moving",
-      "variant": "teal",
-      "amplitude": 22,
-      "periodBeats": 4,
-      "phase": 0
-    },
-    {
-      "id": "high-41",
-      "startBeat": 218.84328245249995,
-      "endBeat": 219.59328245249995,
-      "height": 185,
-      "type": "floating",
-      "variant": "plum"
-    },
-    {
-      "id": "lift-47",
-      "startBeat": 265.2476374525,
-      "endBeat": 266.7476374525,
-      "height": 220,
-      "type": "moving",
-      "variant": "teal",
-      "amplitude": 22,
-      "periodBeats": 4,
-      "phase": 0
-    },
-    {
-      "id": "high-47",
-      "startBeat": 266.8476374525,
-      "endBeat": 267.5976374525,
-      "height": 185,
-      "type": "floating",
-      "variant": "plum"
-    },
     {
       "id": "column-2-0",
       "startBeat": 2.9,
@@ -2986,22 +2670,6 @@
       "id": "column-2-1",
       "startBeat": 4.05,
       "endBeat": 4.85,
-      "height": 110,
-      "type": "column",
-      "variant": "plum"
-    },
-    {
-      "id": "column-194-0",
-      "startBeat": 194.9,
-      "endBeat": 195.48,
-      "height": 60,
-      "type": "column",
-      "variant": "teal"
-    },
-    {
-      "id": "column-194-1",
-      "startBeat": 196.05,
-      "endBeat": 196.85,
       "height": 110,
       "type": "column",
       "variant": "plum"
@@ -3021,6 +2689,195 @@
       "height": 110,
       "type": "column",
       "variant": "plum"
+    },
+    {
+      "id": "spring-lane-3-0",
+      "startBeat": 20.832407785833333,
+      "endBeat": 21.482407785833335,
+      "height": 140,
+      "type": "floating",
+      "variant": "teal"
+    },
+    {
+      "id": "spring-lane-3-1",
+      "startBeat": 21.772407785833334,
+      "endBeat": 22.422407785833336,
+      "height": 185,
+      "type": "moving",
+      "variant": "plum",
+      "amplitude": 12,
+      "periodBeats": 4,
+      "phase": 0
+    },
+    {
+      "id": "spring-lane-3-2",
+      "startBeat": 22.722407785833333,
+      "endBeat": 23.382407785833333,
+      "height": 110,
+      "type": "floating",
+      "variant": "teal"
+    },
+    {
+      "id": "spring-lane-8-0",
+      "startBeat": 58.83125361916666,
+      "endBeat": 59.48125361916666,
+      "height": 140,
+      "type": "floating",
+      "variant": "teal"
+    },
+    {
+      "id": "spring-lane-8-1",
+      "startBeat": 59.771253619166664,
+      "endBeat": 60.42125361916666,
+      "height": 185,
+      "type": "moving",
+      "variant": "plum",
+      "amplitude": 12,
+      "periodBeats": 4,
+      "phase": 0
+    },
+    {
+      "id": "spring-lane-8-2",
+      "startBeat": 60.72125361916666,
+      "endBeat": 61.021253619166664,
+      "height": 110,
+      "type": "floating",
+      "variant": "teal"
+    },
+    {
+      "id": "spring-lane-20-0",
+      "startBeat": 108.82241611916665,
+      "endBeat": 109.47241611916665,
+      "height": 140,
+      "type": "floating",
+      "variant": "teal"
+    },
+    {
+      "id": "spring-lane-20-1",
+      "startBeat": 109.76241611916664,
+      "endBeat": 110.41241611916665,
+      "height": 185,
+      "type": "moving",
+      "variant": "plum",
+      "amplitude": 12,
+      "periodBeats": 4,
+      "phase": 0
+    },
+    {
+      "id": "spring-lane-20-2",
+      "startBeat": 110.71241611916665,
+      "endBeat": 111.37241611916664,
+      "height": 110,
+      "type": "floating",
+      "variant": "teal"
+    },
+    {
+      "id": "spring-lane-27-0",
+      "startBeat": 154.85793174416668,
+      "endBeat": 155.50793174416665,
+      "height": 140,
+      "type": "floating",
+      "variant": "teal"
+    },
+    {
+      "id": "spring-lane-27-1",
+      "startBeat": 155.79793174416668,
+      "endBeat": 156.44793174416665,
+      "height": 185,
+      "type": "moving",
+      "variant": "plum",
+      "amplitude": 12,
+      "periodBeats": 4,
+      "phase": 0
+    },
+    {
+      "id": "spring-lane-27-2",
+      "startBeat": 156.74793174416666,
+      "endBeat": 157.04793174416665,
+      "height": 110,
+      "type": "floating",
+      "variant": "teal"
+    },
+    {
+      "id": "spring-lane-37-0",
+      "startBeat": 200.8397310775,
+      "endBeat": 201.48973107749998,
+      "height": 140,
+      "type": "floating",
+      "variant": "teal"
+    },
+    {
+      "id": "spring-lane-37-1",
+      "startBeat": 201.7797310775,
+      "endBeat": 202.42973107749998,
+      "height": 185,
+      "type": "moving",
+      "variant": "plum",
+      "amplitude": 12,
+      "periodBeats": 4,
+      "phase": 0
+    },
+    {
+      "id": "spring-lane-37-2",
+      "startBeat": 202.7297310775,
+      "endBeat": 203.3897310775,
+      "height": 110,
+      "type": "floating",
+      "variant": "teal"
+    },
+    {
+      "id": "spring-lane-41-0",
+      "startBeat": 216.82328245249997,
+      "endBeat": 217.47328245249994,
+      "height": 140,
+      "type": "floating",
+      "variant": "teal"
+    },
+    {
+      "id": "spring-lane-41-1",
+      "startBeat": 217.76328245249996,
+      "endBeat": 218.41328245249994,
+      "height": 185,
+      "type": "moving",
+      "variant": "plum",
+      "amplitude": 12,
+      "periodBeats": 4,
+      "phase": 0
+    },
+    {
+      "id": "spring-lane-41-2",
+      "startBeat": 218.71328245249995,
+      "endBeat": 219.37328245249995,
+      "height": 110,
+      "type": "floating",
+      "variant": "teal"
+    },
+    {
+      "id": "spring-lane-47-0",
+      "startBeat": 264.82763745249997,
+      "endBeat": 265.4776374525,
+      "height": 140,
+      "type": "floating",
+      "variant": "teal"
+    },
+    {
+      "id": "spring-lane-47-1",
+      "startBeat": 265.76763745249997,
+      "endBeat": 266.4176374525,
+      "height": 185,
+      "type": "moving",
+      "variant": "plum",
+      "amplitude": 12,
+      "periodBeats": 4,
+      "phase": 0
+    },
+    {
+      "id": "spring-lane-47-2",
+      "startBeat": 266.7176374525,
+      "endBeat": 267.3776374525,
+      "height": 110,
+      "type": "floating",
+      "variant": "teal"
     }
   ],
   "extraJumps": [
@@ -3043,14 +2900,6 @@
     {
       "id": "return-162-jump",
       "beat": 161.5
-    },
-    {
-      "id": "column-jump-194",
-      "beat": 194
-    },
-    {
-      "id": "column-double-194",
-      "beat": 195.3
     },
     {
       "id": "return-258-jump",
@@ -3204,22 +3053,6 @@
       "periodBeats": 2
     },
     {
-      "id": "lizard-5",
-      "beat": 28.553041119166668,
-      "y": 464,
-      "radius": 16,
-      "amplitude": 9,
-      "periodBeats": 2
-    },
-    {
-      "id": "lizard-6",
-      "beat": 50.550620285833325,
-      "y": 464,
-      "radius": 16,
-      "amplitude": 9,
-      "periodBeats": 2
-    },
-    {
       "id": "lizard-7",
       "beat": 54.54199528583332,
       "y": 464,
@@ -3236,56 +3069,8 @@
       "periodBeats": 2
     },
     {
-      "id": "lizard-21",
-      "beat": 112.55167445249997,
-      "y": 464,
-      "radius": 16,
-      "amplitude": 9,
-      "periodBeats": 2
-    },
-    {
-      "id": "lizard-23",
-      "beat": 120.55246195249998,
-      "y": 464,
-      "radius": 16,
-      "amplitude": 9,
-      "periodBeats": 2
-    },
-    {
       "id": "lizard-24",
       "beat": 124.54383695249997,
-      "y": 464,
-      "radius": 16,
-      "amplitude": 9,
-      "periodBeats": 2
-    },
-    {
-      "id": "lizard-25",
-      "beat": 146.55930716083333,
-      "y": 464,
-      "radius": 16,
-      "amplitude": 9,
-      "periodBeats": 2
-    },
-    {
-      "id": "lizard-26",
-      "beat": 150.5507207025,
-      "y": 464,
-      "radius": 16,
-      "amplitude": 9,
-      "periodBeats": 2
-    },
-    {
-      "id": "lizard-36",
-      "beat": 196.55041878583333,
-      "y": 464,
-      "radius": 16,
-      "amplitude": 9,
-      "periodBeats": 2
-    },
-    {
-      "id": "lizard-39",
-      "beat": 208.54255661916665,
       "y": 464,
       "radius": 16,
       "amplitude": 9,
@@ -3306,22 +3091,170 @@
       "radius": 16,
       "amplitude": 9,
       "periodBeats": 2
+    }
+  ],
+  "walls": [
+    {
+      "id": "gate-0-top",
+      "startBeat": 226,
+      "endBeat": 226.12,
+      "y": 120,
+      "height": 55,
+      "orientation": "vertical",
+      "variant": "teal"
     },
     {
-      "id": "lizard-49",
-      "beat": 272.54836174416664,
-      "y": 464,
-      "radius": 16,
-      "amplitude": 9,
-      "periodBeats": 2
+      "id": "gate-0-bottom",
+      "startBeat": 226,
+      "endBeat": 226.12,
+      "y": 345,
+      "height": 135,
+      "orientation": "vertical",
+      "variant": "teal"
     },
     {
-      "id": "lizard-50",
-      "beat": 276.5576740358333,
-      "y": 464,
-      "radius": 16,
-      "amplitude": 9,
-      "periodBeats": 2
+      "id": "gate-1-top",
+      "startBeat": 229,
+      "endBeat": 229.12,
+      "y": 120,
+      "height": 125,
+      "orientation": "vertical",
+      "variant": "teal"
+    },
+    {
+      "id": "gate-1-bottom",
+      "startBeat": 229,
+      "endBeat": 229.12,
+      "y": 415,
+      "height": 65,
+      "orientation": "vertical",
+      "variant": "teal"
+    },
+    {
+      "id": "gate-2-top",
+      "startBeat": 232,
+      "endBeat": 232.12,
+      "y": 120,
+      "height": 75,
+      "orientation": "vertical",
+      "variant": "teal"
+    },
+    {
+      "id": "gate-2-bottom",
+      "startBeat": 232,
+      "endBeat": 232.12,
+      "y": 365,
+      "height": 115,
+      "orientation": "vertical",
+      "variant": "teal"
+    },
+    {
+      "id": "corridor-0-top",
+      "startBeat": 235,
+      "endBeat": 236.35,
+      "y": 174,
+      "height": 38,
+      "orientation": "horizontal",
+      "variant": "plum"
+    },
+    {
+      "id": "corridor-0-bottom",
+      "startBeat": 235,
+      "endBeat": 236.35,
+      "y": 390,
+      "height": 38,
+      "orientation": "horizontal",
+      "variant": "plum"
+    },
+    {
+      "id": "corridor-1-top",
+      "startBeat": 237.3,
+      "endBeat": 238.65,
+      "y": 174,
+      "height": 38,
+      "orientation": "horizontal",
+      "variant": "plum"
+    },
+    {
+      "id": "corridor-1-bottom",
+      "startBeat": 237.3,
+      "endBeat": 238.65,
+      "y": 390,
+      "height": 38,
+      "orientation": "horizontal",
+      "variant": "plum"
+    }
+  ],
+  "weather": [
+    {
+      "startBeat": 0,
+      "rain": 0,
+      "fog": 0,
+      "lightning": 0,
+      "meteors": 0.6
+    },
+    {
+      "startBeat": 32,
+      "rain": 0.25,
+      "fog": 0.08,
+      "lightning": 0,
+      "meteors": 0.1
+    },
+    {
+      "startBeat": 64,
+      "rain": 0.4,
+      "fog": 0.4,
+      "lightning": 0.15,
+      "meteors": 0
+    },
+    {
+      "startBeat": 96,
+      "rain": 0.75,
+      "fog": 0.12,
+      "lightning": 0.8,
+      "meteors": 0.1
+    },
+    {
+      "startBeat": 128,
+      "rain": 0.15,
+      "fog": 0.42,
+      "lightning": 0,
+      "meteors": 0.5
+    },
+    {
+      "startBeat": 160,
+      "rain": 0.95,
+      "fog": 0.15,
+      "lightning": 1,
+      "meteors": 0
+    },
+    {
+      "startBeat": 192,
+      "rain": 0.25,
+      "fog": 0.45,
+      "lightning": 0.2,
+      "meteors": 0.3
+    },
+    {
+      "startBeat": 224,
+      "rain": 0.04,
+      "fog": 0.05,
+      "lightning": 0,
+      "meteors": 1
+    },
+    {
+      "startBeat": 256,
+      "rain": 0.85,
+      "fog": 0.2,
+      "lightning": 0.9,
+      "meteors": 0.3
+    },
+    {
+      "startBeat": 280,
+      "rain": 0.08,
+      "fog": 0.03,
+      "lightning": 0,
+      "meteors": 0.8
     }
   ]
 }
