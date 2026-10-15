@@ -1,0 +1,44 @@
+{
+  "version": 11,
+  "audioSeconds": 192.048,
+  "bpm": 92.5,
+  "beats": 296,
+  "sections": 10,
+  "slowPlaybackRate": 0.65,
+  "slowWindows": 5,
+  "approxWallSeconds": 195.5407234927235,
+  "flyingEnemies": 46,
+  "walkingEnemies": 16,
+  "returnPortals": 5,
+  "gravityRings": 5,
+  "powerups": 13,
+  "extraTerrain": 20,
+  "validation": {
+    "fullCourseWithoutPowerups": "passed",
+    "gravityCheckpoint": "passed",
+    "shieldMagnetThirdJump": "passed",
+    "avoidableReturnAndPracticeReset": "passed",
+    "movingPlatformRider": "passed",
+    "nativeAudioEndTwoDurations": "passed",
+    "landscapeSizes": [
+      [
+        844,
+        390
+      ],
+      [
+        640,
+        360
+      ],
+      [
+        932,
+        430
+      ],
+      [
+        1920,
+        1080
+      ]
+    ],
+    "nativeCanvasVisualQA": "passed",
+    "manualMobileBrowser": "pending"
+  }
+}

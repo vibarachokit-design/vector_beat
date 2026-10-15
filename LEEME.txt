@@ -1,76 +1,50 @@
-VECTOR BEAT: CROCHET — ROBOT ⇄ COHETE (v10)
+VECTOR BEAT: CROCHET — NIVEL 13 COMPLETO · v11
 
-Extrae TODO el ZIP y abre index.html. Formato horizontal para celulares.
-Toca Jugar; la pantalla completa depende del navegador. Las imágenes deben
-terminar de cargar antes de iniciar. La demo dura unos 42 segundos.
+ABRIR: descomprime y abre index.html en un navegador moderno. Si tu navegador
+bloquea archivos locales, sirve esta carpeta con: python -m http.server 8000
+Luego abre http://localhost:8000. En celulares usa la versión web en horizontal.
+No requiere instalación ni librerías externas.
 
-MECÁNICA
-En suelo y plataformas eres un robot de crochet que corre y salta.
-El robot usa menta, turquesa, cobalto, taupe y naranja, como el cohete.
-Portal COHETE: transformación visual de 0,30 s y control de vuelo.
-Portal ROBOT: vuelve al robot y aterriza sobre el suelo.
-La lógica cambia al cruzar el portal y la animación visual acompaña el cambio.
-La entrada al vuelo conserva la altura del robot para evitar un salto visual.
-En el cierre, el robot celebra y entra al portal final.
+MÚSICA: Nivel 13 completo, MP3 original de 192.048 segundos (3:12), 92.5 BPM,
+296 pulsos y 10 sectores. El reloj del audio gobierna toda la simulación y el
+evento nativo ended abre el portal final; se respeta el pequeño relleno del MP3.
+Cinco portales lentos reproducen música y juego al 65 %, conservando el tono.
+Por ello una partida completa dura aproximadamente 3:15.5 de tiempo real;
+ninguna nota se recorta. Nueve portales de velocidad multiplican el avance ×2.
 
-Toca para saltar; otro toque permite doble salto. Mantén para saltar más alto.
-Durante el vuelo, mantén para subir y suelta para bajar.
-Los anillos requieren un toque al pasar. Los trampolines rebotan solos.
-Los portales naranjas x2 duplican la velocidad; x1 vuelve a la base.
-Ⅱ pausa. Teclado: Espacio/↑ salto, P pausa, R reintento.
-Práctica: ＋ guarda checkpoint, − lo elimina; teclado C y Z.
-Los checkpoints restauran la forma, posición, velocidad y estado de salto.
+CONTROLES: toca/espacio para saltar; repite en el aire para doble salto.
+Mantén para alargar el salto. En modo cohete mantén para subir, suelta para bajar.
+Toca al pasar por un aro para activarlo al pulso. Escape/P pausa.
+Robot en tierra y techo, transformación animada a cohete en portales de vuelo.
 
-NUEVO TERRENO
-Ocho columnas con alturas de 60 y 110 unidades de juego, con tapa sólida y
-choque lateral: debes superarlas por arriba. Se añade una isla flotante
-elevada y cuatro señales de salto para enlazar las columnas.
-Hay tres colores de plataforma: índigo/turquesa, teal/naranja y ciruela/magenta.
-La columna usa cobalto/turquesa/naranja. Los nudos rojos siguen siendo peligros.
-Las plataformas altas anteriores y las polillas se mantienen.
-La forma del robot se mantiene al saltar; solo el modo de vuelo usa cohete.
-El perseguidor grande del cierre es visual; las polillas pequeñas sí chocan.
+NUEVO
+• Cinco aros ↕ violetas: inversión de gravedad durante 3 pulsos y restauración.
+• Cinco portales INICIO ↶: trampas por contacto. Salta para esquivarlas.
+  Si las tocas, canción y recorrido vuelven al comienzo incluso en práctica.
+• Cinco portales ◷: cámara lenta durante 2 pulsos, sin perder sincronización.
+• 46 enemigos voladores y 16 lagartijas tejidas con cuatro cuadros de marcha.
+• Rutas altas: 7 plataformas que suben/bajan hasta 22 píxeles, 7 islas altas
+  y 6 columnas adicionales. Usa doble salto tras el trampolín para subir.
+• 13 potenciadores: ◇ un escudo de un golpe, U imán de notas y ↑³ tercer salto.
+  Cada efecto dura 8 pulsos. El escudo no protege de una caída ni de un retorno.
+• Puntuación, tres cristales secretos, estrellas, caras y colores desbloqueables.
+• Reintento rápido y práctica con checkpoints personales. Los checkpoints
+  conservan poderes, gravedad, objetos recogidos y velocidad de reproducción.
 
-MÚSICA Y RÉCORDS
-Se conserva el mismo fragmento de Nivel 13: 64 pulsos a 92,5 BPM.
-Primer salto a 1,30 s. El reloj del audio gobierna todo el recorrido.
-No se modifica la velocidad de la canción. El evento ended controla el final.
-Los récords de esta nueva mecánica se guardan aparte de las versiones previas.
-Para tres estrellas: 85% de notas y 80% de precisión. Ruta probada: 42/49 notas.
-La reacción de muerte dura 0,12 s más el tiempo de carga/búsqueda del audio.
+EDITAR: level-map.json es el mapa legible. level-map.js contiene los mismos
+datos para abrir directamente sin servidor. Tras editar JSON, actualiza el JS
+(o importa JSON desde Ajustes). Usa versión 11; hay validación de los campos.
+Datos nuevos: walkers, powerups, returnPortals, portales kind:slow,
+aros kind:gravity y terrain type:moving. Duraciones en pulsos de la canción.
+Movimiento determinista: la pausa y la cámara lenta también paran/reducen
+los enemigos, plataformas, cielo y piernas del robot.
 
-ARCHIVOS
-index.html: interfaz; game.js: motor y dibujo.
-level-map.js/json: mapa v7 ampliado con terrain y extraJumps.
-sprite-layout.js/json: coordenadas y anclajes de los nueve PNG.
-rocket.png y moth.png: hojas de cuatro cuadros en rejilla 2x2.
-robot.png conserva las poses anteriores como respaldo. robot-rig.png tiene
-cuerpo, brazos y piernas separados para la animación articulada.
-clouds.png contiene cuatro variantes de nube de crochet.
-platform.png, platform-teal.png, platform-plum.png, column.png, ring.png,
-knot.png: elementos del escenario con transparencia.
-music.mp3: fragmento. ARTE.txt: briefs y método de generación de imágenes.
-manifest.webmanifest: orientación horizontal y pantalla completa.
-demo-report.json: comprobaciones. Este paquete es independiente y local;
-los enlaces de comparación solo aparecen en la demo alojada.
+ARTE: PNG originales de crochet con transparencia. sprite-layout.json/js
+indican recortes y anclajes; el robot usa piezas articuladas. ARTE.txt documenta
+las imágenes y el nuevo prompt. No se incluyen las fotos privadas de referencia.
 
-VALIDACIÓN
-Recorrido completo sin choques y tres estrellas; saltos sobre columnas,
-colisión lateral, aterrizaje, transformación en ambos sentidos, forma correcta
-al restaurar checkpoints, nueve imágenes y límites de todos los cuadros.
-No se realizó revisión visual en navegador ni prueba en un teléfono físico.
-
-MOVIMIENTO v10
-El piso ahora está anclado a las coordenadas del mundo, no a la pantalla.
-Su textura avanza exactamente con la distancia recorrida, incluidos x2.
-El robot corre mediante cinco piezas: cuerpo, dos brazos y dos piernas.
-Brazos y piernas oscilan en sentidos opuestos; hay inclinación y rebote.
-La zancada depende de la distancia: acelera cuando aumenta la velocidad.
-En el aire usa una postura de salto y al celebrar levanta los brazos.
-El movimiento se detiene al pausar. La portada muestra la misma animación.
-El cielo tiene un gradiente nocturno, luna tejida, nubes y relieve lejano.
-Las nubes se mueven al 5,5% y 15% de la velocidad del mundo.
-El relieve usa otras dos velocidades. No se cambia el recorrido ni la música.
-Se reduce el movimiento decorativo cuando el dispositivo así lo solicita.
-Se comprobó el dibujo real con Canvas nativo y se inspeccionaron imágenes
-de la escena y las poses. Sigue pendiente la revisión en navegador/celular.
+VALIDACIÓN: recorrido completo por simulación a 120 Hz sin potenciadores,
+sin muertes y con todos los portales temporales atravesados. Pruebas separadas
+de poderes, gravedad/checkpoints, retorno, plataformas con pasajero, final
+nativo del audio, carga y límites de sprites, cuatro tamaños horizontales.
+Revisión visual con Canvas nativo; aún falta prueba manual en celular real.

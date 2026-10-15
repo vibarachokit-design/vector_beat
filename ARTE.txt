@@ -42,3 +42,14 @@ pies hacia la derecha, fondo transparente, sin texto ni escenario.
 Los recortes reales están en sprite-layout.json y se animan en Canvas.
 Nubes: cuatro nubes de crochet en hoja 2x2, lana índigo/teal/slate con
 bordes cian suaves, sin cielo ni texto y fondo transparente.
+
+NIVEL COMPLETO v11 — imagegen integrado
+Lagartija: hoja 2x2 de cuatro fases de marcha hacia la izquierda. Crochet
+esmeralda y teal, cresta cobalto, detalles naranja, ojos negros, cola larga.
+Referencia de material y luz: robot-rig.png. Piezas aisladas en transparencia,
+sin texto ni suelo; PNG original sin modificar. Recortes y anclajes en
+sprite-layout.json. Prompt: Production game sprite sheet of one crochet
+lizard enemy, four walking poses in clean 2x2 grid, equal cells, transparent
+padding, chunky yarn stitches, emerald/deep teal body, cobalt ridges, orange
+accents, shiny black eyes, side profile facing left, long curved tail right,
+subtle cyan/magenta rim lighting matching robot reference.
