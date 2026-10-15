@@ -1,0 +1,44 @@
+ARTE VECTOR BEAT: CROCHET
+Método: imágenes generadas con la herramienta integrada imagegen a partir
+ de la imagen conceptual aprobada; PNG con transparencia. Las hojas se
+ muestrean en Canvas sin modificar sus píxeles. sprite-layout.json describe
+ los recortes, el tamaño original y los puntos de anclaje por cuadro.
+
+Briefs usados para las cinco imágenes:
+1. Cohete: hoja cuadrada de cuatro celdas en rejilla 2x2; mismo cohete hacia
+la derecha, cuerpo menta/turquesa, nariz y aletas verde azulado oscuro,
+bandas taupe, ventana azul cobalto con borde naranja, sin cara. Cuatro fases
+de la llama de hilos rojos, naranjas y amarillos. Puntadas gruesas y luces neón.
+2. Polilla: hoja cuadrada de cuatro celdas 2x2; polilla tejida violeta oscuro,
+patrones magenta y bordes rosa neón; cuatro etapas de aleteo con cuerpo
+estable. Sin sonrisa y con silueta de peligro legible.
+3. Plataforma: una isla flotante tejida, superficie superior horizontal de
+lana trenzada turquesa, volumen inferior índigo/violeta, luces cian y púrpura.
+4. Anillo: un aro vertical de crochet naranja/dorado, centro transparente,
+lana trenzada gruesa, fibras visibles y margen transparente.
+5. Nudo: un peligro rojo y naranja de lana enredada, centro tejido compacto
+y seis extremos cortos curvos, reflejos dorados, sin ojos ni cara.
+Todos: objetos aislados en transparencia real, sin texto, escenario ni HUD.
+
+ACTUALIZACIÓN ROBOT / PLATAFORMAS
+Método: imagegen integrado con fotos del robot aportadas por el usuario y
+la imagen conceptual del mundo tejido como referencias.
+6. Robot: hoja 2x2 de cuatro poses de carrera hacia la derecha; cabeza
+cuadrada de crochet menta, torso y botas verde azulado, articulaciones taupe,
+antena azul y panel de pecho azul cobalto con borde naranja. Sin manos humanas.
+7. Plataforma teal: isla tejida turquesa oscura con borde naranja/dorado,
+superficie superior plana y transparencia exterior.
+8. Plataforma ciruela: isla índigo/ciruela con borde trenzado magenta y
+acentos cobalto, superficie plana y transparencia exterior.
+9. Columna: cilindro alto de crochet cobalto/índigo, tapa horizontal de lana
+turquesa y banda naranja. Se agrupan pilares para respetar la anchura física
+de cada tramo y conservar la proporción de las puntadas.
+
+MOVIMIENTO v10 — Imagegen integrado
+Robot rig: mismo robot de crochet menta/turquesa/taupe/cobalto/naranja,
+hoja de piezas aisladas: cabeza y torso unidos, brazo izquierdo, brazo
+derecho, pierna izquierda y pierna derecha. Juntas arriba, botas abajo,
+pies hacia la derecha, fondo transparente, sin texto ni escenario.
+Los recortes reales están en sprite-layout.json y se animan en Canvas.
+Nubes: cuatro nubes de crochet en hoja 2x2, lana índigo/teal/slate con
+bordes cian suaves, sin cielo ni texto y fondo transparente.
