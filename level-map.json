@@ -1,11 +1,11 @@
 {
-  "version": 12,
+  "version": 15,
   "title": "Vector Beat: Crochet · Nivel 13 completo",
   "bpm": 92.5,
   "offset": 0.01706522,
   "endBeat": 296,
   "sourceAudio": "music.mp3",
-  "notes": "Canción completa, 296 pulsos y 10 sectores. El audio es el reloj maestro. Los portales lentos cambian playbackRate con tono conservado. Retornos esquivables por contacto. Datos editables. v12: rutas de plataformas separadas y encuentros exclusivos; muros de vuelo 226–239, clima gradual ligado al reloj del audio.",
+  "notes": "Canción completa, 296 pulsos y 10 sectores. El audio es el reloj maestro. Los portales lentos cambian playbackRate con tono conservado. Retornos esquivables por contacto. Datos editables. v12: rutas de plataformas separadas y encuentros exclusivos; muros de vuelo 226–239, clima gradual ligado al reloj del audio. v14: escaleras móviles ascendentes, columnas intermedias y final activo.",
   "sections": [
     {
       "startBeat": 0,
@@ -441,6 +441,13 @@
       "encounter": "moth"
     },
     {
+      "id": "active-transition-30.6",
+      "time": 19.86571386864865,
+      "pattern": "single",
+      "obstacle": "cone",
+      "surface": "floor"
+    },
+    {
       "id": "phrase-50",
       "time": 32.4499,
       "pattern": "single",
@@ -452,6 +459,13 @@
       "scoreVoice": 1,
       "scoreNoteBeat": 50.0,
       "scoreDurationBeats": 0.5
+    },
+    {
+      "id": "pace-knot-51.8",
+      "time": 33.61706522,
+      "pattern": "single",
+      "obstacle": "cone",
+      "surface": "floor"
     },
     {
       "id": "phrase-54",
@@ -495,6 +509,20 @@
       "scoreDurationBeats": 0.5
     },
     {
+      "id": "active-transition-62.1",
+      "time": 40.29814630108108,
+      "pattern": "single",
+      "obstacle": "cone",
+      "surface": "floor"
+    },
+    {
+      "id": "active-fill-66",
+      "time": 42.82787603081081,
+      "pattern": "single",
+      "obstacle": "cone",
+      "surface": "ceiling"
+    },
+    {
       "id": "phrase-68",
       "time": 44.1295,
       "pattern": "single",
@@ -522,6 +550,13 @@
       "scoreDurationBeats": 0.5
     },
     {
+      "id": "ceiling-fill-72",
+      "time": 46.7154972972973,
+      "pattern": "single",
+      "obstacle": "rock",
+      "surface": "ceiling"
+    },
+    {
       "id": "phrase-74",
       "time": 48.0189,
       "pattern": "gap",
@@ -533,6 +568,13 @@
       "scoreVoice": 1,
       "scoreNoteBeat": 74.0,
       "scoreDurationBeats": 0.5
+    },
+    {
+      "id": "active-fill-76",
+      "time": 49.3143625172973,
+      "pattern": "single",
+      "obstacle": "cone",
+      "surface": "ceiling"
     },
     {
       "id": "phrase-78",
@@ -575,6 +617,13 @@
       "encounter": "moth"
     },
     {
+      "id": "ceiling-fill-88",
+      "time": 57.0948972972973,
+      "pattern": "single",
+      "obstacle": "rock",
+      "surface": "ceiling"
+    },
+    {
       "id": "phrase-90",
       "time": 58.3982,
       "pattern": "spring",
@@ -599,6 +648,13 @@
       "scoreVoice": 0,
       "scoreNoteBeat": 92,
       "scoreDurationBeats": 0.5
+    },
+    {
+      "id": "active-transition-94.6",
+      "time": 61.37922738216216,
+      "pattern": "single",
+      "obstacle": "cone",
+      "surface": "ceiling"
     },
     {
       "id": "phrase-100",
@@ -710,6 +766,13 @@
       "encounter": "moth"
     },
     {
+      "id": "pace-knot-147.8",
+      "time": 95.88733549027029,
+      "pattern": "single",
+      "obstacle": "cone",
+      "surface": "floor"
+    },
+    {
       "id": "phrase-150",
       "time": 97.31483,
       "pattern": "pair",
@@ -750,6 +813,13 @@
       "scoreDurationBeats": 1.0
     },
     {
+      "id": "active-transition-158.1",
+      "time": 102.56841657135136,
+      "pattern": "single",
+      "obstacle": "cone",
+      "surface": "floor"
+    },
+    {
       "id": "phrase-164",
       "time": 106.393832,
       "pattern": "single",
@@ -763,6 +833,13 @@
       "scoreDurationBeats": 0.5
     },
     {
+      "id": "ceiling-fill-166",
+      "time": 107.6911292972973,
+      "pattern": "single",
+      "obstacle": "rock",
+      "surface": "ceiling"
+    },
+    {
       "id": "phrase-168",
       "time": 108.994467,
       "pattern": "gap",
@@ -774,6 +851,13 @@
       "scoreVoice": 1,
       "scoreNoteBeat": 168,
       "scoreDurationBeats": 0.5
+    },
+    {
+      "id": "active-fill-170",
+      "time": 110.28733549027028,
+      "pattern": "single",
+      "obstacle": "cone",
+      "surface": "ceiling"
     },
     {
       "id": "phrase-172",
@@ -816,6 +900,13 @@
       "scoreDurationBeats": 0.5
     },
     {
+      "id": "active-transition-182.3",
+      "time": 118.26571386864867,
+      "pattern": "single",
+      "obstacle": "cone",
+      "surface": "ceiling"
+    },
+    {
       "id": "phrase-184",
       "time": 119.373787,
       "pattern": "triple",
@@ -829,6 +920,13 @@
       "scoreDurationBeats": 0.5
     },
     {
+      "id": "ceiling-fill-186",
+      "time": 120.67108429729728,
+      "pattern": "single",
+      "obstacle": "rock",
+      "surface": "ceiling"
+    },
+    {
       "id": "phrase-188",
       "time": 121.962812,
       "pattern": "pair",
@@ -840,6 +938,13 @@
       "scoreVoice": 0,
       "scoreNoteBeat": 188,
       "scoreDurationBeats": 0.5
+    },
+    {
+      "id": "active-fill-194",
+      "time": 125.85490305783784,
+      "pattern": "single",
+      "obstacle": "cone",
+      "surface": "floor"
     },
     {
       "id": "phrase-196",
@@ -935,6 +1040,20 @@
       "scoreNoteBeat": 220,
       "scoreDurationBeats": 0.5,
       "encounter": "walker"
+    },
+    {
+      "id": "active-transition-222.6",
+      "time": 144.4062544091892,
+      "pattern": "single",
+      "obstacle": "cone",
+      "surface": "floor"
+    },
+    {
+      "id": "active-fill-242",
+      "time": 156.99003819297297,
+      "pattern": "single",
+      "obstacle": "cone",
+      "surface": "ceiling"
     },
     {
       "id": "phrase-244",
@@ -1043,6 +1162,20 @@
       "scoreVoice": 1,
       "scoreNoteBeat": 276,
       "scoreDurationBeats": 0.5
+    },
+    {
+      "id": "active-transition-278.6",
+      "time": 180.73057873351354,
+      "pattern": "single",
+      "obstacle": "cone",
+      "surface": "floor"
+    },
+    {
+      "id": "pace-knot-294.4",
+      "time": 190.97922738216215,
+      "pattern": "single",
+      "obstacle": "cone",
+      "surface": "floor"
     }
   ],
   "flightObstacles": [
@@ -1322,21 +1455,21 @@
   "secrets": [
     {
       "id": "cristal-1",
-      "beat": 21.1,
-      "y": 210,
-      "hint": "Sobre la primera ruta alta"
+      "beat": 23.05240778583333,
+      "y": 190,
+      "hint": "En lo alto del tercer peldaño móvil"
     },
     {
       "id": "cristal-2",
-      "beat": 40,
-      "y": 220,
-      "hint": "En el arco del tramo de vuelo"
+      "beat": 111.04241611916665,
+      "y": 190,
+      "hint": "En lo alto del tercer peldaño móvil"
     },
     {
       "id": "cristal-3",
-      "beat": 269.3,
-      "y": 225,
-      "hint": "Con el anillo del gran regreso"
+      "beat": 267.0476374525,
+      "y": 190,
+      "hint": "En lo alto del tercer peldaño móvil"
     }
   ],
   "accents": [
@@ -2695,189 +2828,396 @@
       "startBeat": 20.832407785833333,
       "endBeat": 21.482407785833335,
       "height": 140,
-      "type": "floating",
-      "variant": "teal"
+      "type": "moving",
+      "variant": "teal",
+      "amplitude": 8,
+      "periodBeats": 4,
+      "phase": 0,
+      "noteBeat": 21.157407785833335
     },
     {
       "id": "spring-lane-3-1",
       "startBeat": 21.772407785833334,
       "endBeat": 22.422407785833336,
-      "height": 185,
+      "height": 195,
       "type": "moving",
       "variant": "plum",
-      "amplitude": 12,
+      "amplitude": 10,
       "periodBeats": 4,
-      "phase": 0
+      "phase": 0,
+      "noteBeat": 22.097407785833333
     },
     {
       "id": "spring-lane-3-2",
       "startBeat": 22.722407785833333,
       "endBeat": 23.382407785833333,
-      "height": 110,
-      "type": "floating",
-      "variant": "teal"
+      "height": 245,
+      "type": "moving",
+      "variant": "teal",
+      "amplitude": 12,
+      "periodBeats": 4,
+      "phase": 0,
+      "noteBeat": 23.05240778583333
     },
     {
       "id": "spring-lane-8-0",
       "startBeat": 58.83125361916666,
       "endBeat": 59.48125361916666,
       "height": 140,
-      "type": "floating",
-      "variant": "teal"
+      "type": "moving",
+      "variant": "teal",
+      "amplitude": 8,
+      "periodBeats": 4,
+      "phase": 0,
+      "noteBeat": 59.15625361916666
     },
     {
       "id": "spring-lane-8-1",
       "startBeat": 59.771253619166664,
       "endBeat": 60.42125361916666,
-      "height": 185,
+      "height": 195,
       "type": "moving",
       "variant": "plum",
-      "amplitude": 12,
+      "amplitude": 10,
       "periodBeats": 4,
-      "phase": 0
+      "phase": 0,
+      "noteBeat": 60.09625361916666
     },
     {
       "id": "spring-lane-8-2",
       "startBeat": 60.72125361916666,
       "endBeat": 61.021253619166664,
-      "height": 110,
-      "type": "floating",
-      "variant": "teal"
+      "height": 245,
+      "type": "moving",
+      "variant": "teal",
+      "amplitude": 12,
+      "periodBeats": 4,
+      "phase": 0,
+      "noteBeat": 60.871253619166666
     },
     {
       "id": "spring-lane-20-0",
       "startBeat": 108.82241611916665,
       "endBeat": 109.47241611916665,
       "height": 140,
-      "type": "floating",
-      "variant": "teal"
+      "type": "moving",
+      "variant": "teal",
+      "amplitude": 8,
+      "periodBeats": 4,
+      "phase": 0,
+      "noteBeat": 109.14741611916665
     },
     {
       "id": "spring-lane-20-1",
       "startBeat": 109.76241611916664,
       "endBeat": 110.41241611916665,
-      "height": 185,
+      "height": 195,
       "type": "moving",
       "variant": "plum",
-      "amplitude": 12,
+      "amplitude": 10,
       "periodBeats": 4,
-      "phase": 0
+      "phase": 0,
+      "noteBeat": 110.08741611916665
     },
     {
       "id": "spring-lane-20-2",
       "startBeat": 110.71241611916665,
       "endBeat": 111.37241611916664,
-      "height": 110,
-      "type": "floating",
-      "variant": "teal"
+      "height": 245,
+      "type": "moving",
+      "variant": "teal",
+      "amplitude": 12,
+      "periodBeats": 4,
+      "phase": 0,
+      "noteBeat": 111.04241611916665
     },
     {
       "id": "spring-lane-27-0",
       "startBeat": 154.85793174416668,
       "endBeat": 155.50793174416665,
       "height": 140,
-      "type": "floating",
-      "variant": "teal"
+      "type": "moving",
+      "variant": "teal",
+      "amplitude": 8,
+      "periodBeats": 4,
+      "phase": 0,
+      "noteBeat": 155.18293174416667
     },
     {
       "id": "spring-lane-27-1",
       "startBeat": 155.79793174416668,
       "endBeat": 156.44793174416665,
-      "height": 185,
+      "height": 195,
       "type": "moving",
       "variant": "plum",
-      "amplitude": 12,
+      "amplitude": 10,
       "periodBeats": 4,
-      "phase": 0
+      "phase": 0,
+      "noteBeat": 156.12293174416666
     },
     {
       "id": "spring-lane-27-2",
       "startBeat": 156.74793174416666,
       "endBeat": 157.04793174416665,
-      "height": 110,
-      "type": "floating",
-      "variant": "teal"
+      "height": 245,
+      "type": "moving",
+      "variant": "teal",
+      "amplitude": 12,
+      "periodBeats": 4,
+      "phase": 0,
+      "noteBeat": 156.89793174416667
     },
     {
       "id": "spring-lane-37-0",
       "startBeat": 200.8397310775,
       "endBeat": 201.48973107749998,
       "height": 140,
-      "type": "floating",
-      "variant": "teal"
+      "type": "moving",
+      "variant": "teal",
+      "amplitude": 8,
+      "periodBeats": 4,
+      "phase": 0,
+      "noteBeat": 201.1647310775
     },
     {
       "id": "spring-lane-37-1",
       "startBeat": 201.7797310775,
       "endBeat": 202.42973107749998,
-      "height": 185,
+      "height": 195,
       "type": "moving",
       "variant": "plum",
-      "amplitude": 12,
+      "amplitude": 10,
       "periodBeats": 4,
-      "phase": 0
+      "phase": 0,
+      "noteBeat": 202.1047310775
     },
     {
       "id": "spring-lane-37-2",
       "startBeat": 202.7297310775,
       "endBeat": 203.3897310775,
-      "height": 110,
-      "type": "floating",
-      "variant": "teal"
+      "height": 245,
+      "type": "moving",
+      "variant": "teal",
+      "amplitude": 12,
+      "periodBeats": 4,
+      "phase": 0,
+      "noteBeat": 203.05973107749998
     },
     {
       "id": "spring-lane-41-0",
       "startBeat": 216.82328245249997,
       "endBeat": 217.47328245249994,
       "height": 140,
-      "type": "floating",
-      "variant": "teal"
+      "type": "moving",
+      "variant": "teal",
+      "amplitude": 8,
+      "periodBeats": 4,
+      "phase": 0,
+      "noteBeat": 217.14828245249996
     },
     {
       "id": "spring-lane-41-1",
       "startBeat": 217.76328245249996,
       "endBeat": 218.41328245249994,
-      "height": 185,
+      "height": 195,
       "type": "moving",
       "variant": "plum",
-      "amplitude": 12,
+      "amplitude": 10,
       "periodBeats": 4,
-      "phase": 0
+      "phase": 0,
+      "noteBeat": 218.08828245249995
     },
     {
       "id": "spring-lane-41-2",
       "startBeat": 218.71328245249995,
       "endBeat": 219.37328245249995,
-      "height": 110,
-      "type": "floating",
-      "variant": "teal"
+      "height": 245,
+      "type": "moving",
+      "variant": "teal",
+      "amplitude": 12,
+      "periodBeats": 4,
+      "phase": 0,
+      "noteBeat": 219.04328245249997
     },
     {
       "id": "spring-lane-47-0",
       "startBeat": 264.82763745249997,
       "endBeat": 265.4776374525,
       "height": 140,
-      "type": "floating",
-      "variant": "teal"
+      "type": "moving",
+      "variant": "teal",
+      "amplitude": 8,
+      "periodBeats": 4,
+      "phase": 0,
+      "noteBeat": 265.1526374525
     },
     {
       "id": "spring-lane-47-1",
       "startBeat": 265.76763745249997,
       "endBeat": 266.4176374525,
-      "height": 185,
+      "height": 195,
       "type": "moving",
       "variant": "plum",
-      "amplitude": 12,
+      "amplitude": 10,
       "periodBeats": 4,
-      "phase": 0
+      "phase": 0,
+      "noteBeat": 266.09263745249996
     },
     {
       "id": "spring-lane-47-2",
       "startBeat": 266.7176374525,
       "endBeat": 267.3776374525,
-      "height": 110,
-      "type": "floating",
-      "variant": "teal"
+      "height": 245,
+      "type": "moving",
+      "variant": "teal",
+      "amplitude": 12,
+      "periodBeats": 4,
+      "phase": 0,
+      "noteBeat": 267.0476374525
+    },
+    {
+      "id": "pace-column-10",
+      "startBeat": 10.892361952499998,
+      "endBeat": 11.472361952499998,
+      "height": 65,
+      "type": "column",
+      "variant": "plum",
+      "noteBeat": 11.152361952499998
+    },
+    {
+      "id": "pace-column-52",
+      "startBeat": 52.90062028583333,
+      "endBeat": 53.480620285833325,
+      "height": 65,
+      "type": "column",
+      "variant": "plum",
+      "noteBeat": 53.160620285833325
+    },
+    {
+      "id": "pace-column-102",
+      "startBeat": 102.89178278583331,
+      "endBeat": 103.47178278583331,
+      "height": 65,
+      "type": "column",
+      "variant": "plum",
+      "noteBeat": 103.1517827858333
+    },
+    {
+      "id": "pace-column-122",
+      "startBeat": 122.90246195249999,
+      "endBeat": 123.48246195249999,
+      "height": 65,
+      "type": "column",
+      "variant": "plum",
+      "noteBeat": 123.16246195249998
+    },
+    {
+      "id": "pace-column-148",
+      "startBeat": 148.90930716083332,
+      "endBeat": 149.4893071608333,
+      "height": 65,
+      "type": "column",
+      "variant": "plum",
+      "noteBeat": 149.1693071608333
+    },
+    {
+      "id": "pace-column-198",
+      "startBeat": 198.90041878583332,
+      "endBeat": 199.4804187858333,
+      "height": 65,
+      "type": "column",
+      "variant": "plum",
+      "noteBeat": 199.16041878583331
+    },
+    {
+      "id": "pace-column-210",
+      "startBeat": 210.89255661916664,
+      "endBeat": 211.47255661916662,
+      "height": 65,
+      "type": "column",
+      "variant": "plum",
+      "noteBeat": 211.15255661916663
+    },
+    {
+      "id": "pace-column-262",
+      "startBeat": 262.90622391083326,
+      "endBeat": 263.4862239108333,
+      "height": 65,
+      "type": "column",
+      "variant": "plum",
+      "noteBeat": 263.1662239108333
+    },
+    {
+      "id": "fixed-stair-286-0",
+      "startBeat": 286.9,
+      "endBeat": 287.48,
+      "height": 60,
+      "type": "column",
+      "variant": "teal",
+      "noteBeat": 287.15
+    },
+    {
+      "id": "fixed-stair-286-1",
+      "startBeat": 288.04999999999995,
+      "endBeat": 288.63,
+      "height": 115,
+      "type": "column",
+      "variant": "plum",
+      "noteBeat": 288.29999999999995
+    },
+    {
+      "id": "fixed-stair-286-2",
+      "startBeat": 289.2,
+      "endBeat": 289.78000000000003,
+      "height": 170,
+      "type": "column",
+      "variant": "teal",
+      "noteBeat": 289.45
+    },
+    {
+      "id": "fixed-stair-290-0",
+      "startBeat": 290.9,
+      "endBeat": 291.48,
+      "height": 60,
+      "type": "column",
+      "variant": "teal",
+      "noteBeat": 291.15
+    },
+    {
+      "id": "fixed-stair-290-1",
+      "startBeat": 292.04999999999995,
+      "endBeat": 292.63,
+      "height": 115,
+      "type": "column",
+      "variant": "plum",
+      "noteBeat": 292.29999999999995
+    },
+    {
+      "id": "fixed-stair-290-2",
+      "startBeat": 293.2,
+      "endBeat": 293.78000000000003,
+      "height": 170,
+      "type": "column",
+      "variant": "teal",
+      "noteBeat": 293.45
+    },
+    {
+      "id": "pace-column-118",
+      "startBeat": 118.9,
+      "endBeat": 119.48,
+      "height": 65,
+      "type": "column",
+      "variant": "teal",
+      "noteBeat": 119.16
+    },
+    {
+      "id": "pace-column-206",
+      "startBeat": 206.9,
+      "endBeat": 207.48,
+      "height": 65,
+      "type": "column",
+      "variant": "teal",
+      "noteBeat": 207.16
     }
   ],
   "extraJumps": [
@@ -2894,16 +3234,154 @@
       "beat": 5.5
     },
     {
+      "id": "pace-jump-10",
+      "beat": 9.992361952499998
+    },
+    {
+      "id": "phrase-20-high-step-0",
+      "beat": 20.952407785833334,
+      "optional": true,
+      "air": true,
+      "double": true
+    },
+    {
+      "id": "phrase-20-high-step-1",
+      "beat": 22.002407785833334,
+      "optional": true,
+      "air": true,
+      "double": true
+    },
+    {
+      "id": "pace-jump-52",
+      "beat": 52.00062028583333
+    },
+    {
+      "id": "phrase-58-high-step-0",
+      "beat": 58.951253619166664,
+      "optional": true,
+      "air": true,
+      "double": true
+    },
+    {
+      "id": "phrase-58-high-step-1",
+      "beat": 60.00125361916666,
+      "optional": true,
+      "air": true,
+      "double": true
+    },
+    {
       "id": "return-98-jump",
       "beat": 97.5
+    },
+    {
+      "id": "pace-jump-102",
+      "beat": 101.99178278583331
+    },
+    {
+      "id": "phrase-108-high-step-0",
+      "beat": 108.94241611916665,
+      "optional": true,
+      "air": true,
+      "double": true
+    },
+    {
+      "id": "phrase-108-high-step-1",
+      "beat": 109.99241611916665,
+      "optional": true,
+      "air": true,
+      "double": true
+    },
+    {
+      "id": "pace-jump-118",
+      "beat": 118
+    },
+    {
+      "id": "pace-jump-122",
+      "beat": 122.00246195249998
+    },
+    {
+      "id": "pace-jump-148",
+      "beat": 148.00930716083332
+    },
+    {
+      "id": "phrase-154-high-step-0",
+      "beat": 154.97793174416665,
+      "optional": true,
+      "air": true,
+      "double": true
+    },
+    {
+      "id": "phrase-154-high-step-1",
+      "beat": 156.02793174416666,
+      "optional": true,
+      "air": true,
+      "double": true
     },
     {
       "id": "return-162-jump",
       "beat": 161.5
     },
     {
+      "id": "pace-jump-198",
+      "beat": 198.00041878583332
+    },
+    {
+      "id": "phrase-200-high-step-0",
+      "beat": 200.95973107749998,
+      "optional": true,
+      "air": true,
+      "double": true
+    },
+    {
+      "id": "phrase-200-high-step-1",
+      "beat": 202.0097310775,
+      "optional": true,
+      "air": true,
+      "double": true
+    },
+    {
+      "id": "pace-jump-206",
+      "beat": 206
+    },
+    {
+      "id": "pace-jump-210",
+      "beat": 209.99255661916663
+    },
+    {
+      "id": "phrase-216-high-step-0",
+      "beat": 216.94328245249994,
+      "optional": true,
+      "air": true,
+      "double": true
+    },
+    {
+      "id": "phrase-216-high-step-1",
+      "beat": 217.99328245249995,
+      "optional": true,
+      "air": true,
+      "double": true
+    },
+    {
       "id": "return-258-jump",
       "beat": 257.5
+    },
+    {
+      "id": "pace-jump-262",
+      "beat": 262.0062239108333
+    },
+    {
+      "id": "phrase-264-high-step-0",
+      "beat": 264.9476374525,
+      "optional": true,
+      "air": true,
+      "double": true
+    },
+    {
+      "id": "phrase-264-high-step-1",
+      "beat": 265.9976374525,
+      "optional": true,
+      "air": true,
+      "double": true
     },
     {
       "id": "column-jump-282",
@@ -2914,8 +3392,28 @@
       "beat": 283.3
     },
     {
-      "id": "return-286-jump",
-      "beat": 285.5
+      "id": "fixed-stair-jump-286-0",
+      "beat": 286.0
+    },
+    {
+      "id": "fixed-stair-jump-286-1",
+      "beat": 287.15
+    },
+    {
+      "id": "fixed-stair-jump-286-2",
+      "beat": 288.3
+    },
+    {
+      "id": "fixed-stair-jump-290-0",
+      "beat": 290.0
+    },
+    {
+      "id": "fixed-stair-jump-290-1",
+      "beat": 291.15
+    },
+    {
+      "id": "fixed-stair-jump-290-2",
+      "beat": 292.3
     }
   ],
   "returnPortals": [
@@ -2940,12 +3438,6 @@
     {
       "id": "return-258",
       "beat": 258,
-      "y": 440,
-      "radius": 42
-    },
-    {
-      "id": "return-286",
-      "beat": 286,
       "y": 440,
       "radius": 42
     }
@@ -3255,6 +3747,36 @@
       "fog": 0.03,
       "lightning": 0,
       "meteors": 0.8
+    }
+  ],
+  "challenges": [
+    {
+      "id": "stairs",
+      "name": "Completa la escalera",
+      "startBeat": 18,
+      "endBeat": 24,
+      "goal": "high"
+    },
+    {
+      "id": "storm",
+      "name": "Supera la tormenta",
+      "startBeat": 160,
+      "endBeat": 176,
+      "goal": "finish"
+    },
+    {
+      "id": "walls",
+      "name": "Cruza los muros",
+      "startBeat": 224,
+      "endBeat": 240,
+      "goal": "finish"
+    },
+    {
+      "id": "chase",
+      "name": "Escapa de la mantis",
+      "startBeat": 256,
+      "endBeat": 280,
+      "goal": "finish"
     }
   ]
 }

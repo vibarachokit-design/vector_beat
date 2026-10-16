@@ -334,5 +334,46 @@
         "anchorY": 264.06
       }
     ]
+  },
+  "mantis": {
+    "file": "mantis.png",
+    "sourceWidth": 1536,
+    "sourceHeight": 1024,
+    "facing": "right",
+    "animation": "run",
+    "frames": [
+      {
+        "x": 28,
+        "y": 15,
+        "w": 729,
+        "h": 471,
+        "anchorX": 729,
+        "anchorY": 471
+      },
+      {
+        "x": 796,
+        "y": 15,
+        "w": 729,
+        "h": 471,
+        "anchorX": 729,
+        "anchorY": 471
+      },
+      {
+        "x": 28,
+        "y": 527,
+        "w": 729,
+        "h": 471,
+        "anchorX": 729,
+        "anchorY": 471
+      },
+      {
+        "x": 796,
+        "y": 527,
+        "w": 729,
+        "h": 471,
+        "anchorX": 729,
+        "anchorY": 471
+      }
+    ]
   }
 }

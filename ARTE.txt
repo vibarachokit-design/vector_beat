@@ -53,3 +53,18 @@ lizard enemy, four walking poses in clean 2x2 grid, equal cells, transparent
 padding, chunky yarn stitches, emerald/deep teal body, cobalt ridges, orange
 accents, shiny black eyes, side profile facing left, long curved tail right,
 subtle cyan/magenta rim lighting matching robot reference.
+
+PORTADA v13
+cover.png: copia exacta de la portada seleccionada por el usuario.
+play-button.png: generado con imagegen integrado usando esa imagen como
+referencia, transparencia original. Prompt: One horizontal capsule game
+button in chunky crochet, dark petrol teal/cobalt center, braided cyan/violet
+border, thin orange seam, subtle cyan rim light, empty central label area,
+front-facing, no text, symbols or characters, transparent background.
+
+Mantis v16: imagegen integrado, referencia mantis aprobada. Prompt: exact
+crochet mantis, right-facing side-view four-frame running cycle in 2x2
+equal cells, aligned head and feet, alternating four walking legs and two
+raptorial forelegs reaching right, same teal/cobalt/taupe/orange yarn,
+transparent background, no labels. PNG sin modificar; recortes uniformes
+en sprite-layout.json para evitar cambios de escala entre cuadros.

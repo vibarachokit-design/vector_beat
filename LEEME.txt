@@ -70,3 +70,70 @@ CLIMA Y MUROS v12
   colisiones y huecos de muros, acceso a la ruta alta móvil, clima/pausa,
   movimiento reducido y seis escenas revisadas con Canvas nativo.
   No se ha hecho prueba manual de navegador/celular en esta revisión.
+
+PORTADA ANIMADA v13
+Pantalla inicial con la portada exacta aprobada (cover.png), sin recortar
+el título ni los personajes. Botón de crochet (play-button.png) con texto
+HTML accesible Jugar y efecto de presión. Acceso a Práctica, Personalizar
+y Ajustes. Pequeños movimientos locales en nubes, portales y llama;
+no se sustituye la ilustración ni se altera el nivel. Respeta movimiento
+reducido. Ajuste horizontal con altura dinámica de pantalla en celulares.
+Validación de controles, identidad de imagen y cuatro tamaños horizontales;
+prueba manual en navegador/celular pendiente.
+
+ACTIVIDAD Y ESCALERAS v14 — configuración actual
+21 plataformas móviles en 7 escaleras de tres peldaños ascendentes:
+140, 195 y 245 píxeles sobre el piso, con oscilación de 8–12 píxeles.
+Señales de doble salto sobre las plataformas y notas en cada escalón.
+20 columnas fijas en total, incluidas dos escaleras al final del recorrido.
+Se añadieron encuentros entre frases y antes de cambios de modo para
+reducir los tramos de espera. Se conservan el vuelo, clima, paredes,
+potenciadores, portales, modo práctica y la portada animada.
+El retorno que estaba en el pulso 286 se retiró para despejar la nueva
+escalera final; quedan cuatro trampas de retorno.
+Mapa JSON/JS versión 14; registros de progreso propios para este trazado.
+Validación: dos recorridos completos a 120 Hz, por ruta baja y con saltos
+por las escaleras, ambos sin muertes ni potenciadores; comprobación
+de solapes, checkpoints, física, final del audio y tamaños horizontales.
+Prueba manual en navegador/celular pendiente.
+
+IDENTIDAD Y DESAFÍOS v15 — seis mejoras
+1. Perseguidor: polilla gigante desde el pulso 256. Deshace las plataformas
+   que ya quedaron detrás; el camino por delante conserva su física.
+2. Transformación de 0.42 segundos: Vector se separa en bandas de hilos y
+   se vuelve a tejer como Rocketer, sin detener controles ni música.
+3. Recompensas: notas normales +10 puntos; notas de rutas/plataformas
+   extra +30. Las tres gemas secretas se ubican en los escalones altos
+   cercanos a los pulsos 23, 111 y 267. Rótulos RUTA ALTA ×3.
+4. ¡Por un hilo!: +75 por esquivar a menos de 18 píxeles de la colisión,
+   entregados después de pasar el peligro. Una sola vez por objeto; sin
+   premio por cruzar durante invulnerabilidad. Estado conservado en checkpoints.
+5. DESAFÍOS en la portada: cuatro fragmentos reales de Nivel 13.
+   Completa la escalera (18–24; exige alcanzar un peldaño de 230+ píxeles),
+   Supera la tormenta (160–176), Cruza los muros (224–240), Escapa de la
+   polilla (256–280). Récords separados, sin estrellas ni desbloqueos del
+   modo normal. Al morir/reintentar/entrar en un retorno se reinicia ese
+   fragmento. Salir y pulsar Jugar vuelve a la canción completa.
+6. Llegada conjunta: Vector y Rocketer envían energía tejida al portal,
+   entran juntos y el mundo se ilumina según las notas obtenidas. La llama
+   sigue animada durante la celebración. Respeta movimiento reducido.
+
+Datos actuales: mapa versión 15 con lista challenges editable y validada.
+La geometría de escaleras y columnas se conserva. El progreso normal
+existente se conserva; los desafíos usan sus propios registros.
+Verificación: canción completa sin muertes ni poderes; cuatro desafíos
+con éxito, reintento, fin de audio acotado y registros aislados; objetivo
+alto fallido si se toma solo la ruta baja; recompensas, checkpoints y
+colisiones cercanas; cero superposiciones de las envolventes de obstáculos;
+revisión visual de transformación, perseguidor y final con Canvas nativo.
+Falta probar esta revisión en un navegador/celular real.
+
+MANTIS PERSEGUIDORA v16
+La perseguidora gigante ahora es la mantis religiosa de crochet.
+Animación de cuatro cuadros orientados a la derecha, hacia Vector, con
+patas alternadas, brazos de captura y antenas. Se mantiene detrás del
+personaje y sigue su altura con una inclinación leve. Sin invertir la
+imagen hacia la izquierda. Animación a 10 cuadros/s del reloj musical;
+se detiene en pausa y se ralentiza con la canción. Movimiento reducido:
+pose fija. Desafío renombrado Escapa de la mantis; récord conservado.
+Las polillas pequeñas voladoras conservan su función.

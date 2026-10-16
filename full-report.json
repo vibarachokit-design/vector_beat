@@ -1,5 +1,5 @@
 {
-  "version": 12,
+  "version": 15,
   "audioSeconds": 192.048,
   "bpm": 92.5,
   "beats": 296,
@@ -9,10 +9,10 @@
   "approxWallSeconds": 195.5407234927235,
   "flyingEnemies": 23,
   "walkingEnemies": 6,
-  "returnPortals": 5,
+  "returnPortals": 4,
   "gravityRings": 5,
   "powerups": 13,
-  "extraTerrain": 25,
+  "extraTerrain": 41,
   "validation": {
     "fullCourseWithoutPowerups": "passed",
     "gravityCheckpoint": "passed",
@@ -45,8 +45,66 @@
     "wallCollisionAndGaps": "passed",
     "weatherPauseAndReducedMotion": "passed",
     "mobileUpperRoute": "passed",
-    "nativeCanvasScenes": 6
+    "nativeCanvasScenes": 6,
+    "exactSelectedCover": "byte-identical",
+    "coverControls": "passed",
+    "coverLandscapeFit": "4 sizes",
+    "upperRouteFullCourse": "passed without powers or deaths",
+    "groundRouteFullCourse": "passed without powers or deaths",
+    "fullSongWithoutPowers": "passed",
+    "fourChallengeCoursesAndRetries": "passed",
+    "challengeIsolationAndHighGoal": "passed",
+    "nearMissAndCheckpointAntiRepeat": "passed",
+    "threadMorphAndDuetCanvas": "passed",
+    "mantisFrames": 4,
+    "mantisFacing": "right",
+    "mantisMediaClockPause": "passed",
+    "nativeMantisCanvas": "passed"
   },
   "walls": 10,
-  "weatherSections": 10
+  "weatherSections": 10,
+  "uiVersion": 16,
+  "movingPlatforms": 21,
+  "fixedColumns": 20,
+  "maxPlatformHeight": 245,
+  "phrases": 70,
+  "challenges": [
+    {
+      "id": "stairs",
+      "name": "Completa la escalera",
+      "startBeat": 18,
+      "endBeat": 24,
+      "goal": "high"
+    },
+    {
+      "id": "storm",
+      "name": "Supera la tormenta",
+      "startBeat": 160,
+      "endBeat": 176,
+      "goal": "finish"
+    },
+    {
+      "id": "walls",
+      "name": "Cruza los muros",
+      "startBeat": 224,
+      "endBeat": 240,
+      "goal": "finish"
+    },
+    {
+      "id": "chase",
+      "name": "Escapa de la polilla",
+      "startBeat": 256,
+      "endBeat": 280,
+      "goal": "finish"
+    }
+  ],
+  "features": [
+    "pursuer-and-unravel",
+    "thread-morph",
+    "high-route-rewards",
+    "near-miss",
+    "short-challenges",
+    "duet-finale"
+  ],
+  "pursuer": "right-facing crochet praying mantis"
 }
